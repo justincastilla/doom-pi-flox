@@ -1,0 +1,29 @@
+# Prove the environment activates and DOOM runs, on both CPU architectures.
+# The arm64 job is the same aarch64-linux lockfile entry the Raspberry Pi uses.
+name: smoke-test
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Same installer a person runs on the Pi. The lockfile is committed, so
+      # activation needs no catalog resolution (and no FloxHub login).
+      - name: Install Flox
+        run: |
+          curl -fsSL https://get.flox.dev | sh
+          flox --version
+          flox config --set disable_metrics true
+
+      - name: Headless timedemo in both engines
+        run: flox activate -- smoke-test

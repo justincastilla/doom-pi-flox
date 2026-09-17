@@ -1,0 +1,405 @@
+{
+  "lockfile-version": 1,
+  "manifest": {
+    "schema-version": "1.16.0",
+    "install": {
+      "chocolate-doom": {
+        "pkg-path": "chocolate-doom"
+      },
+      "crispy-doom": {
+        "pkg-path": "crispy-doom"
+      },
+      "freedoom": {
+        "pkg-path": "freedoom"
+      }
+    },
+    "vars": {
+      "DOOM_IWAD": "freedoom1.wad",
+      "DOOM_PORT": "crispy-doom"
+    },
+    "hook": {
+      "on-activate": "  # Put the launcher scripts on PATH so `flox activate -- doom` just works.\n  export PATH=\"$FLOX_ENV_PROJECT/bin:$PATH\"\n\n  # Where the Doom engines look for IWADs by name (-iwad freedoom1.wad).\n  #   ./wads                      -> drop doom1.wad / DOOM.WAD / DOOM2.WAD here\n  #   $FLOX_ENV/share/games/doom  -> the Freedoom package\n  export DOOMWADPATH=\"$FLOX_ENV_PROJECT/wads:$FLOX_ENV/share/games/doom${DOOMWADPATH:+:$DOOMWADPATH}\"\n"
+    },
+    "profile": {
+      "common": "  # Only chatter in an interactive shell, never under `flox activate -- cmd`.\n  case \"$-\" in *i*)\n    echo \"DOOM environment active: run 'doom' (Freedoom), 'doom-kiosk' (booth loop) or 'smoke-test'.\"\n    ;;\n  esac\n"
+    },
+    "options": {
+      "systems": [
+        "aarch64-linux",
+        "x86_64-linux",
+        "aarch64-darwin",
+        "x86_64-darwin"
+      ]
+    }
+  },
+  "packages": [
+    {
+      "attr_path": "chocolate-doom",
+      "broken": false,
+      "derivation": "/nix/store/isdxvirpga6cdk4pswg15rv86r0xjh9f-chocolate-doom-3.1.1.drv",
+      "description": "Doom source port that accurately reproduces the experience of Doom as it was played in the 1990s",
+      "install_id": "chocolate-doom",
+      "license": "GPL-2.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
+      "name": "chocolate-doom-3.1.1",
+      "pname": "chocolate-doom",
+      "rev": "d407951447dcd00442e97087bf374aad70c04cea",
+      "rev_count": 1027867,
+      "rev_date": "2026-07-05T04:06:12Z",
+      "scrape_date": "2026-07-06T03:12:55.137952Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.1.1",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "man": "/nix/store/l6fs4s1wv89qld5kapclm9nb7cxhc1mq-chocolate-doom-3.1.1-man",
+        "out": "/nix/store/wf1zvn0mm6l7f5m7b8ykqnri3a5acvkh-chocolate-doom-3.1.1"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "chocolate-doom",
+      "broken": false,
+      "derivation": "/nix/store/kgs3jkmx7m272h2xa2wqs2m90dhsy5lf-chocolate-doom-3.1.1.drv",
+      "description": "Doom source port that accurately reproduces the experience of Doom as it was played in the 1990s",
+      "install_id": "chocolate-doom",
+      "license": "GPL-2.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
+      "name": "chocolate-doom-3.1.1",
+      "pname": "chocolate-doom",
+      "rev": "d407951447dcd00442e97087bf374aad70c04cea",
+      "rev_count": 1027867,
+      "rev_date": "2026-07-05T04:06:12Z",
+      "scrape_date": "2026-07-06T03:41:21.754255Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.1.1",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "man": "/nix/store/2yrkzdbh15yiz3rp7lmkjjq4z5pa7v9a-chocolate-doom-3.1.1-man",
+        "out": "/nix/store/frz4fy0kk1la8m7124aq7zmv3pfl5vp7-chocolate-doom-3.1.1"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "chocolate-doom",
+      "broken": false,
+      "derivation": "/nix/store/5z35njivhs37h88653dyli2qi28jh86i-chocolate-doom-3.1.1.drv",
+      "description": "Doom source port that accurately reproduces the experience of Doom as it was played in the 1990s",
+      "install_id": "chocolate-doom",
+      "license": "GPL-2.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
+      "name": "chocolate-doom-3.1.1",
+      "pname": "chocolate-doom",
+      "rev": "d407951447dcd00442e97087bf374aad70c04cea",
+      "rev_count": 1027867,
+      "rev_date": "2026-07-05T04:06:12Z",
+      "scrape_date": "2026-07-06T04:09:00.501635Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.1.1",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "man": "/nix/store/m4bgadjnmpa2z17ax28mh49ymbnn3dyn-chocolate-doom-3.1.1-man",
+        "out": "/nix/store/p2vlafxsj9lm1i136pqq72g71x8i57pv-chocolate-doom-3.1.1"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "chocolate-doom",
+      "broken": false,
+      "derivation": "/nix/store/13xvb2v1avlzn50rdgvinv45g9snj445-chocolate-doom-3.1.1.drv",
+      "description": "Doom source port that accurately reproduces the experience of Doom as it was played in the 1990s",
+      "install_id": "chocolate-doom",
+      "license": "GPL-2.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
+      "name": "chocolate-doom-3.1.1",
+      "pname": "chocolate-doom",
+      "rev": "d407951447dcd00442e97087bf374aad70c04cea",
+      "rev_count": 1027867,
+      "rev_date": "2026-07-05T04:06:12Z",
+      "scrape_date": "2026-07-06T04:40:24.394840Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.1.1",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "man": "/nix/store/6i99bnpy3vvdkizs5w8adsrbsgk3dm52-chocolate-doom-3.1.1-man",
+        "out": "/nix/store/rxxylmqdj2f0csf6fzlxsb9npd6xik05-chocolate-doom-3.1.1"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "crispy-doom",
+      "broken": false,
+      "derivation": "/nix/store/03bxpksp87jqxhi6d1jz2sz1b99prpvz-crispy-doom-7.1.drv",
+      "description": "Limit-removing enhanced-resolution Doom source port based on Chocolate Doom",
+      "install_id": "crispy-doom",
+      "license": "GPL-2.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
+      "name": "crispy-doom-7.1",
+      "pname": "crispy-doom",
+      "rev": "d407951447dcd00442e97087bf374aad70c04cea",
+      "rev_count": 1027867,
+      "rev_date": "2026-07-05T04:06:12Z",
+      "scrape_date": "2026-07-06T03:12:55.320946Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "7.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/m8bwd8flrm9p48lx7sqws8whnpmdqjf0-crispy-doom-7.1"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "crispy-doom",
+      "broken": false,
+      "derivation": "/nix/store/zrigbi2smh3rqg9gkssrq3shh51ggvc6-crispy-doom-7.1.drv",
+      "description": "Limit-removing enhanced-resolution Doom source port based on Chocolate Doom",
+      "install_id": "crispy-doom",
+      "license": "GPL-2.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
+      "name": "crispy-doom-7.1",
+      "pname": "crispy-doom",
+      "rev": "d407951447dcd00442e97087bf374aad70c04cea",
+      "rev_count": 1027867,
+      "rev_date": "2026-07-05T04:06:12Z",
+      "scrape_date": "2026-07-06T03:41:21.966679Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "7.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/55vrh6izfv432hjbsyjamypdhi7m9xpg-crispy-doom-7.1"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "crispy-doom",
+      "broken": false,
+      "derivation": "/nix/store/jk62ky0bzdxid5mk5kzb34c2ajf0vbnv-crispy-doom-7.1.drv",
+      "description": "Limit-removing enhanced-resolution Doom source port based on Chocolate Doom",
+      "install_id": "crispy-doom",
+      "license": "GPL-2.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
+      "name": "crispy-doom-7.1",
+      "pname": "crispy-doom",
+      "rev": "d407951447dcd00442e97087bf374aad70c04cea",
+      "rev_count": 1027867,
+      "rev_date": "2026-07-05T04:06:12Z",
+      "scrape_date": "2026-07-06T04:09:00.670349Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "7.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/r5flgb3q973rg8ywbbz6k8qcr7jxcccz-crispy-doom-7.1"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "crispy-doom",
+      "broken": false,
+      "derivation": "/nix/store/izx2bsjlf2vx4wn3q9xbg2qkwz3dz7rx-crispy-doom-7.1.drv",
+      "description": "Limit-removing enhanced-resolution Doom source port based on Chocolate Doom",
+      "install_id": "crispy-doom",
+      "license": "GPL-2.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
+      "name": "crispy-doom-7.1",
+      "pname": "crispy-doom",
+      "rev": "d407951447dcd00442e97087bf374aad70c04cea",
+      "rev_count": 1027867,
+      "rev_date": "2026-07-05T04:06:12Z",
+      "scrape_date": "2026-07-06T04:40:24.623815Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "7.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/0gkh7n3w68vd0hp70brazd2zjya611rg-crispy-doom-7.1"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "freedoom",
+      "broken": false,
+      "derivation": "/nix/store/xydnj52n6sqgnazk801h2wl8mf4qxiwx-freedoom-0.13.0.drv",
+      "description": "Game based on the Doom engine",
+      "install_id": "freedoom",
+      "license": "BSD-3-Clause",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
+      "name": "freedoom-0.13.0",
+      "pname": "freedoom",
+      "rev": "d407951447dcd00442e97087bf374aad70c04cea",
+      "rev_count": 1027867,
+      "rev_date": "2026-07-05T04:06:12Z",
+      "scrape_date": "2026-07-06T03:12:55.936912Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.13.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/3lhx592221r1jy65l51j779rxbgm1iwz-freedoom-0.13.0"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "freedoom",
+      "broken": false,
+      "derivation": "/nix/store/4r7xs0m2zf4q9wghvp4bx67bl8srn0nf-freedoom-0.13.0.drv",
+      "description": "Game based on the Doom engine",
+      "install_id": "freedoom",
+      "license": "BSD-3-Clause",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
+      "name": "freedoom-0.13.0",
+      "pname": "freedoom",
+      "rev": "d407951447dcd00442e97087bf374aad70c04cea",
+      "rev_count": 1027867,
+      "rev_date": "2026-07-05T04:06:12Z",
+      "scrape_date": "2026-07-06T03:41:22.903226Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.13.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/f9yh319rdk9yxwnl3acw5zncm9fkkdsx-freedoom-0.13.0"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "freedoom",
+      "broken": false,
+      "derivation": "/nix/store/wgyb1rl4ma9d4xa4cnv8hhig47ma5yy5-freedoom-0.13.0.drv",
+      "description": "Game based on the Doom engine",
+      "install_id": "freedoom",
+      "license": "BSD-3-Clause",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
+      "name": "freedoom-0.13.0",
+      "pname": "freedoom",
+      "rev": "d407951447dcd00442e97087bf374aad70c04cea",
+      "rev_count": 1027867,
+      "rev_date": "2026-07-05T04:06:12Z",
+      "scrape_date": "2026-07-06T04:09:01.420139Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.13.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/zfh8r9shlvy7z6kmxicv4lp811z4csrw-freedoom-0.13.0"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "freedoom",
+      "broken": false,
+      "derivation": "/nix/store/5ynbxybaa949ifaxp1c1z0ykdzrchckd-freedoom-0.13.0.drv",
+      "description": "Game based on the Doom engine",
+      "install_id": "freedoom",
+      "license": "BSD-3-Clause",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
+      "name": "freedoom-0.13.0",
+      "pname": "freedoom",
+      "rev": "d407951447dcd00442e97087bf374aad70c04cea",
+      "rev_count": 1027867,
+      "rev_date": "2026-07-05T04:06:12Z",
+      "scrape_date": "2026-07-06T04:40:25.663834Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.13.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/aqvz7ihmzz92bid2axqm66cfk29cw5rj-freedoom-0.13.0"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    }
+  ]
+}

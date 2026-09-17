@@ -1,0 +1,13 @@
+# Flox runtime state (regenerated on every activation)
+.flox/run/
+.flox/cache/
+.flox/log/
+.flox/lib/
+
+# Commercial or shareware IWADs are never committed. See wads/README.md.
+wads/*.wad
+wads/*.WAD
+wads/*.zip
+
+# Doom writes config and savegames here when HOME is redirected in kiosk mode
+.doom-home/
