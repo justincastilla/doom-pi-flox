@@ -10,11 +10,14 @@ flox activate -- doom                       # rip and tear
 ```
 
 No apt dependency hunting, no compiling SDL on a Pi, no "works on my SD card".
-The environment pins [Crispy Doom](https://github.com/fabiangreffrath/crispy-doom),
-[Chocolate Doom](https://www.chocolate-doom.org/) and the free
-[Freedoom](https://freedoom.github.io/) IWADs for `aarch64-linux`,
+The environment pins [Crispy Doom](https://github.com/fabiangreffrath/crispy-doom)
+and [Chocolate Doom](https://www.chocolate-doom.org/) for `aarch64-linux`,
 `x86_64-linux`, `aarch64-darwin` and `x86_64-darwin`, so the exact same
-binaries and WADs come up on every machine.
+binaries come up on every machine. The game is id Software's original 1993
+shareware release, `doom1.wad` v1.9: Episode 1, *Knee-Deep in the Dead*,
+the real E1M1. It ships in `wads/` because id shipped it that way (the
+installer banner reads "SHAREWARE VERSION, PLEASE DISTRIBUTE!!!"). The free
+[Freedoom](https://freedoom.github.io/) IWADs are in the environment too.
 
 Built for the Flox booth at We Are Developers 2026. If John Romero walks past,
 hand him the keyboard.
@@ -25,21 +28,22 @@ hand him the keyboard.
 | --- | --- |
 | `.flox/env/manifest.toml` | The whole environment: two engines, Freedoom, defaults, activation hook. |
 | `.flox/env/manifest.lock` | Resolved package set for all four platforms. Commit it; activation needs no catalog lookup. |
+| `wads/doom1.wad` | id Software's shareware DOOM v1.9 (Episode 1). MD5 `f0cefca49926d00903cf57551d901abe`, verified by the smoke test. |
 | `bin/doom` | Launcher. Picks the engine and IWAD from `DOOM_PORT` / `DOOM_IWAD`, sets up SDL for a bare console or a desktop. |
 | `bin/doom-kiosk` | Booth loop: relaunches the game whenever a player quits. Config and saves live in `.doom-home/`. |
-| `bin/smoke-test` | Headless timedemo in both engines. Run it before you trust a new SD card. CI runs it on x86_64 and arm64. |
+| `bin/smoke-test` | Verifies the shareware WAD's checksum, then runs a headless timedemo in both engines with both IWADs. CI runs it on x86_64 and arm64. |
 | `bin/enable-auto-activate` | One-time: make `cd` into this directory activate the environment (Flox native auto-activation). |
-| `bin/get-shareware-wad` | Optional: fetch id's shareware `doom1.wad` (checksum verified) for the real E1M1. |
 | `systemd/doom-kiosk.service` | Boot the Pi straight into DOOM on tty1. |
 | `docs/` | [Feasibility study](docs/FEASIBILITY.md), [Raspberry Pi setup](docs/RASPBERRY-PI-SETUP.md), [booth runbook](docs/BOOTH-RUNBOOK.md). |
 
 ## Everyday commands
 
 ```bash
-flox activate -- doom                              # Freedoom Phase 1, Crispy Doom, fullscreen on a console
+flox activate -- doom                              # shareware E1, Crispy Doom, fullscreen on a console
 flox activate -- doom -window                      # windowed, on a desktop
 DOOM_PORT=chocolate-doom flox activate -- doom     # 1993 mode: 320x200, no frills
-DOOM_IWAD=freedoom2.wad flox activate -- doom      # Phase 2 (Doom II style maps)
+DOOM_IWAD=freedoom1.wad flox activate -- doom      # Freedoom Phase 1 (four full episodes)
+DOOM_IWAD=freedoom2.wad flox activate -- doom      # Freedoom Phase 2 (Doom II style maps)
 flox activate -- doom -warp 1 1 -skill 4           # jump straight to E1M1 on Ultra-Violence
 flox activate -- doom-kiosk                        # booth mode
 flox activate -- smoke-test                        # headless proof it all works
@@ -110,6 +114,8 @@ sudo systemctl daemon-reload && sudo systemctl enable --now doom-kiosk
 ## Licenses
 
 Scripts and docs in this repo are MIT. Crispy Doom and Chocolate Doom are
-GPL-2.0-or-later, Freedoom is BSD-3-Clause. Commercial `DOOM.WAD` /
-`DOOM2.WAD` files are yours to bring; they are git-ignored and must never be
-committed or pushed to FloxHub.
+GPL-2.0-or-later, Freedoom is BSD-3-Clause. `wads/doom1.wad` is the
+unmodified shareware version of DOOM, which id Software released for free
+distribution; it is not covered by the MIT license and stays unmodified.
+Commercial `DOOM.WAD` / `DOOM2.WAD` files are yours to bring; they are
+git-ignored and must never be committed or pushed to FloxHub.

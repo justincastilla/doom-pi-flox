@@ -21,7 +21,8 @@
 Talking points that land:
 - Doom renders in software at 35 fps like it's 1993; the Pi is bored. The hard part was never the game, it was the dependency chain, and that's what the lockfile removes.
 - `/usr` on the Pi is untouched. Someone can `apt upgrade` the Pi mid-demo and nothing changes.
-- Freedoom is BSD-licensed, so the whole thing is redistributable. Bring your own `DOOM.WAD` and it's the real 1993 game.
+- It is the real thing: id's 1993 shareware Episode 1, byte-identical to the 1995 `doom19s.zip`, with id's own "PLEASE DISTRIBUTE!!!" banner as the license. Bring your own `DOOM.WAD` and you get all four episodes.
+- If John Romero is at the booth: E1M1 is his map. Hand him the keyboard.
 - Two engines in one environment: `DOOM_PORT=chocolate-doom` for 320x200 purism, Crispy for widescreen. Same WAD.
 
 ## If it breaks

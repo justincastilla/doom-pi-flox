@@ -67,7 +67,7 @@ smoke-test: all engines ran the demo. The environment is playable.
 From the console (Lite, or Ctrl-Alt-F2 on the desktop image):
 
 ```bash
-flox activate -- doom
+flox activate -- doom        # id's shareware Episode 1, Crispy Doom
 ```
 
 `bin/doom` notices there is no Wayland or X11 session and sets
@@ -131,11 +131,10 @@ boot to console (`sudo raspi-config` > System Options > Boot / Auto Login).
 
 ## 6. Optional extras
 
-**Shareware E1M1.** id's shareware `doom1.wad` is freely redistributable:
+**Freedoom instead of the shareware episode.** Four full episodes of free maps:
 
 ```bash
-flox activate -- get-shareware-wad
-DOOM_IWAD=doom1.wad flox activate -- doom
+DOOM_IWAD=freedoom1.wad flox activate -- doom
 ```
 
 **Your own DOOM.WAD.** Copy it from Steam/GOG into `wads/`. It's git-ignored.

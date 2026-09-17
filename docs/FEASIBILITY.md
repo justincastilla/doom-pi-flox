@@ -15,7 +15,8 @@ Date of study: 2026-09-17, Flox 1.16.0.
 | --- | --- |
 | Flox installs on Raspberry Pi OS (64-bit) | Flox ships `flox-<ver>.aarch64-linux.deb`; `curl -fsSL https://get.flox.dev \| sh` selects it on Debian-family aarch64. Same installer verified on Ubuntu x86_64 in this study. |
 | Doom engines exist for aarch64-linux | `flox show crispy-doom` lists `aarch64-linux` (7.1). Same for `chocolate-doom` (3.1.1), `prboom-plus`, `dsda-doom`, `woof-doom`, `gzdoom`. |
-| A free, redistributable IWAD exists | `freedoom` 0.13.0 (BSD-3-Clause), aarch64-linux build, ships `freedoom1.wad`, `freedoom2.wad`, `freedm.wad` under `share/games/doom`. |
+| The real game can be shipped | id's shareware `doom1.wad` v1.9 (from the original `doom19s.zip`, MD5 `f0cefca49926d00903cf57551d901abe`) is committed in `wads/`. Both engines run its DEMO1 (5026 gametics) in the environment and auto-detect it ahead of Freedoom. |
+| A free fallback IWAD exists | `freedoom` 0.13.0 (BSD-3-Clause), aarch64-linux build, ships `freedoom1.wad`, `freedoom2.wad`, `freedm.wad` under `share/games/doom`. |
 | The manifest locks for the Pi | `manifest.lock` contains 12 entries: 3 packages x 4 systems including `aarch64-linux`. Committed to this repo. |
 | The game actually runs | `flox activate -- smoke-test` runs `-timedemo demo1` through Crispy Doom and Chocolate Doom with SDL's dummy drivers: 7117 gametics at ~586 fps on the x86_64 container. |
 | SDL can drive a Pi with or without a desktop | The SDL in the environment (sdl2-compat over SDL 3.4) has `kmsdrm`, `wayland`, `x11`, `opengles2` and `software` video backends and `pipewire`, `pulseaudio` and `alsa` audio backends compiled in. |
@@ -79,7 +80,7 @@ You can, and it works. The point of the demo is what Flox adds on top:
 | RetroPie / Batocera image | Full emulation frontend; buries the Flox story. Great product, wrong demo. |
 | `gzdoom` | In the catalog for aarch64-linux and works, but needs a GPU path (OpenGL/Vulkan) which is the one thing untested. Crispy Doom keeps the demo software-rendered and boring in the right way. |
 | Building Chocolate Doom from source on the Pi | Exactly the yak-shave Flox exists to remove. Could be a `[build]` section demo later if you want to show custom packages. |
-| Commercial DOOM.WAD | Fine to *play* from your own copy (drop it in `wads/`), never to redistribute. Freedoom keeps the repo and any FloxHub push clean. The shareware `doom1.wad` is a middle ground and `bin/get-shareware-wad` fetches it with checksum verification. |
+| Commercial DOOM.WAD | Fine to *play* from your own copy (drop it in `wads/`), never to redistribute. The shareware `doom1.wad` is the real Episode 1 and is free to distribute unmodified, so it is the default; Freedoom stays as the fully free fallback with more maps. |
 
 ## Sources
 
