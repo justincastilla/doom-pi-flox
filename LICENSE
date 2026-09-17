@@ -23,6 +23,6 @@ SOFTWARE.
 ---
 
 The software this repository installs has its own licenses, unchanged:
-Crispy Doom and Chocolate Doom are GPL-2.0-or-later; Freedoom is
-BSD-3-Clause. The id Software shareware IWAD (doom1.wad), if you fetch it,
-is distributed under id's shareware terms and is not part of this repository.
+Crispy Doom is GPL-2.0-or-later. The id Software shareware IWAD
+(wads/doom1.wad) is distributed unmodified under id's shareware terms and is
+not covered by the license above.

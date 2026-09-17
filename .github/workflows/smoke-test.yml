@@ -25,5 +25,5 @@ jobs:
           flox --version
           flox config --set disable_metrics true
 
-      - name: Headless timedemo in both engines
+      - name: Headless timedemo of the shareware WAD
         run: flox activate -- smoke-test

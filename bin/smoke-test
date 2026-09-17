@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Headless proof that the environment is playable: run the built-in demo
-# through both engines with SDL's dummy video/audio drivers. This is what
-# CI runs on x86_64 and arm64 runners, and what you run on the Pi before
-# plugging in a screen.
+# Headless proof that the environment is playable: verify the shareware
+# WAD, then run its built-in demo through the engine with SDL's dummy
+# video/audio drivers. This is what CI runs on x86_64 and arm64 runners,
+# and what you run on the Pi before plugging in a screen.
 #
 #   flox activate -- smoke-test
 set -euo pipefail
@@ -16,7 +16,7 @@ export SDL_VIDEODRIVER=dummy
 export SDL_AUDIODRIVER=dummy
 export HOME="$(mktemp -d)"
 project="${FLOX_ENV_PROJECT:-$PWD}"
-: "${DOOMWADPATH:=$project/wads:$FLOX_ENV/share/games/doom}"
+: "${DOOMWADPATH:=$project/wads}"
 export DOOMWADPATH
 
 # GNU `timeout` is not on macOS, so: run the command in the background and
@@ -54,8 +54,8 @@ fi
 # Doom has reported timedemo results through I_Error() since 1993, so the
 # exit status is non-zero even on success; the "timed N gametics" line is
 # the real verdict.
-for iwad in doom1.wad freedoom1.wad; do
-  for port in crispy-doom chocolate-doom; do
+for iwad in doom1.wad; do
+  for port in crispy-doom; do
     printf '%-16s ' "$port"
     printf '%-14s ' "$iwad"
     if ! command -v "$port" >/dev/null 2>&1; then
@@ -72,7 +72,7 @@ done
 
 echo
 if [ "$fail" -eq 0 ]; then
-  echo "smoke-test: all engines ran the demo in every IWAD. The environment is playable."
+  echo "smoke-test: the engine ran the shareware demo. The environment is playable."
 else
   echo "smoke-test: something failed, see output above." >&2
 fi

@@ -23,7 +23,6 @@ Talking points that land:
 - `/usr` on the Pi is untouched. Someone can `apt upgrade` the Pi mid-demo and nothing changes.
 - It is the real thing: id's 1993 shareware Episode 1, byte-identical to the 1995 `doom19s.zip`, with id's own "PLEASE DISTRIBUTE!!!" banner as the license. Bring your own `DOOM.WAD` and you get all four episodes.
 - If John Romero is at the booth: E1M1 is his map. Hand him the keyboard.
-- Two engines in one environment: `DOOM_PORT=chocolate-doom` for 320x200 purism, Crispy for widescreen. Same WAD.
 
 ## If it breaks
 

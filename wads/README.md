@@ -6,7 +6,6 @@ Drop IWAD files here. The Flox activation hook puts this directory first on
 | File | Where it comes from | How to play |
 | --- | --- | --- |
 | `doom1.wad` (committed) | id Software's shareware DOOM v1.9, extracted from the original `doom19s.zip` DEICE installer. MD5 `f0cefca49926d00903cf57551d901abe`. Episode 1, nine maps. The default. | `flox activate -- doom` |
-| `freedoom1.wad`, `freedoom2.wad`, `freedm.wad` | Already in the environment (the `freedoom` package). Nothing to copy. | `DOOM_IWAD=freedoom1.wad flox activate -- doom` |
 | `DOOM.WAD`, `DOOM2.WAD` | Your own purchased copy (Steam, GOG, the 1993 floppies). Copy them here. | `DOOM_IWAD=DOOM.WAD flox activate -- doom` |
 
 Only `doom1.wad` is tracked by git; every other `.wad` here is ignored.
@@ -16,4 +15,4 @@ About the shareware WAD: id released it for free distribution (the 1995
 installer's banner reads "SHAREWARE VERSION / PLEASE DISTRIBUTE!!!") on the
 condition that it stays unmodified, and id asked that no custom levels be made
 for it. The engines honour that: with `doom1.wad` loaded, `-file` PWADs are
-refused. Use Freedoom or a registered IWAD for custom maps.
+refused. Use a registered IWAD for custom maps.

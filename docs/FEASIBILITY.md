@@ -2,7 +2,7 @@
 
 **Verdict: feasible, and most of it is already proven.** Every component
 needed is in the Flox catalog with an `aarch64-linux` build, the environment
-locks for all four platforms, and both engines run a full timedemo inside the
+locks for all four platforms, and the engine runs a full timedemo inside the
 activated environment. The one thing that cannot be verified without hardware
 is video and audio output on the Pi itself, and there are cheap fallbacks for
 each failure mode. Budget one evening with a Pi before the conference.
@@ -14,11 +14,10 @@ Date of study: 2026-09-17, Flox 1.16.0.
 | Claim | Evidence |
 | --- | --- |
 | Flox installs on Raspberry Pi OS (64-bit) | Flox ships `flox-<ver>.aarch64-linux.deb`; `curl -fsSL https://get.flox.dev \| sh` selects it on Debian-family aarch64. Same installer verified on Ubuntu x86_64 in this study. |
-| Doom engines exist for aarch64-linux | `flox show crispy-doom` lists `aarch64-linux` (7.1). Same for `chocolate-doom` (3.1.1), `prboom-plus`, `dsda-doom`, `woof-doom`, `gzdoom`. |
-| The real game can be shipped | id's shareware `doom1.wad` v1.9 (from the original `doom19s.zip`, MD5 `f0cefca49926d00903cf57551d901abe`) is committed in `wads/`. Both engines run its DEMO1 (5026 gametics) in the environment and auto-detect it ahead of Freedoom. |
-| A free fallback IWAD exists | `freedoom` 0.13.0 (BSD-3-Clause), aarch64-linux build, ships `freedoom1.wad`, `freedoom2.wad`, `freedm.wad` under `share/games/doom`. |
+| A Doom engine exists for aarch64-linux | `flox show crispy-doom` lists `aarch64-linux` (7.1). Also available if ever wanted: `chocolate-doom`, `prboom-plus`, `dsda-doom`, `woof-doom`, `gzdoom`. |
+| The real game can be shipped | id's shareware `doom1.wad` v1.9 (from the original `doom19s.zip`, MD5 `f0cefca49926d00903cf57551d901abe`) is committed in `wads/`. Crispy Doom runs its DEMO1 (5026 gametics) in the environment. |
 | The manifest locks for the Pi | `manifest.lock` contains 12 entries: 3 packages x 4 systems including `aarch64-linux`. Committed to this repo. |
-| The game actually runs | `flox activate -- smoke-test` runs `-timedemo demo1` through Crispy Doom and Chocolate Doom with SDL's dummy drivers: 7117 gametics at ~586 fps on the x86_64 container. |
+| The game actually runs | `flox activate -- smoke-test` verifies the WAD's MD5 and runs `-timedemo demo1` through Crispy Doom with SDL's dummy drivers: 5026 gametics at ~590 fps on the x86_64 container, and it passes on GitHub's arm64 runner. |
 | SDL can drive a Pi with or without a desktop | The SDL in the environment (sdl2-compat over SDL 3.4) has `kmsdrm`, `wayland`, `x11`, `opengles2` and `software` video backends and `pipewire`, `pulseaudio` and `alsa` audio backends compiled in. |
 | CI can prove the arm64 build | GitHub-hosted `ubuntu-24.04-arm` runners are standard runners, available in public and private repos. The workflow runs the smoke test on both x86_64 and arm64. |
 
@@ -41,10 +40,10 @@ into `bin/doom` or documented in the runbook.
    `SDL_AUDIODRIVER=alsa` (commented in the unit). The Pi 4/5 HDMI audio path
    is plain ALSA and works. Worst case: `-nosound` and let the booth speakers
    play the soundtrack from a phone.
-4. **Performance.** Chocolate Doom on a Pi 5 is reported at 1-2 % CPU;
-   Crispy Doom at 640x400 software-scaled to 1080p is still a light load. A
-   Pi 4 is fine; a Pi 3 works at lower resolution (`-geometry 640x480` or
-   Chocolate Doom). Untested by me on hardware.
+4. **Performance.** Chocolate Doom (Crispy's parent) on a Pi 5 is reported
+   at 1-2 % CPU; Crispy Doom at 640x400 software-scaled to 1080p is still a
+   light load. A Pi 4 is fine; a Pi 3 works at lower resolution
+   (`-geometry 640x480`). Untested by me on hardware.
 5. **Input.** Keyboard and mouse over USB need no setup. For a gamepad, run
    `crispy-doom-setup` once and bind the buttons; the config persists in
    `.doom-home/` under kiosk mode.
@@ -79,8 +78,9 @@ You can, and it works. The point of the demo is what Flox adds on top:
 | --- | --- |
 | RetroPie / Batocera image | Full emulation frontend; buries the Flox story. Great product, wrong demo. |
 | `gzdoom` | In the catalog for aarch64-linux and works, but needs a GPU path (OpenGL/Vulkan) which is the one thing untested. Crispy Doom keeps the demo software-rendered and boring in the right way. |
-| Building Chocolate Doom from source on the Pi | Exactly the yak-shave Flox exists to remove. Could be a `[build]` section demo later if you want to show custom packages. |
-| Commercial DOOM.WAD | Fine to *play* from your own copy (drop it in `wads/`), never to redistribute. The shareware `doom1.wad` is the real Episode 1 and is free to distribute unmodified, so it is the default; Freedoom stays as the fully free fallback with more maps. |
+| Building Crispy Doom from source on the Pi | Exactly the yak-shave Flox exists to remove. Could be a `[build]` section demo later if you want to show custom packages. |
+| Freedoom (free IWAD) and Chocolate Doom (purist engine) | Both were in the environment originally and both work on aarch64-linux. Dropped to keep the demo to one thing: the real 1993 Episode 1. |
+| Commercial DOOM.WAD | Fine to *play* from your own copy (drop it in `wads/`), never to redistribute. The shareware `doom1.wad` is the real Episode 1 and is free to distribute unmodified, so it is what ships. |
 
 ## Sources
 
@@ -89,5 +89,4 @@ You can, and it works. The point of the demo is what Flox adds on top:
 - Chocolate Doom on Raspberry Pi (wiki): https://www.chocolate-doom.org/wiki/index.php/Raspberry_Pi
 - DOOM on a Raspberry Pi 5 (CPU load numbers): https://picockpit.com/raspberry-pi/doom-on-a-raspberry-pi-5/
 - Crispy Doom: https://github.com/fabiangreffrath/crispy-doom
-- Freedoom: https://freedoom.github.io/
 - GitHub arm64 standard runners in private repos: https://github.blog/changelog/2026-01-29-arm64-standard-runners-are-now-available-in-private-repositories/

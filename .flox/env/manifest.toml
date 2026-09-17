@@ -9,20 +9,14 @@
 schema-version = "1.16.0"
 
 ## Packages ------------------------------------------------------------
-## Every package below is built for aarch64-linux (Raspberry Pi 3/4/5,
-## 64-bit OS) as well as x86_64-linux and both macOS architectures, so
-## the same lockfile works on the Pi, a laptop, and CI.
+## Built for aarch64-linux (Raspberry Pi 3/4/5, 64-bit OS) as well as
+## x86_64-linux and both macOS architectures, so the same lockfile works
+## on the Pi, a laptop, and CI.
 [install]
 # Limit-removing Doom port based on Chocolate Doom: higher resolution,
-# widescreen, still vanilla-compatible. The default engine.
+# widescreen, still vanilla-compatible. The game data is id's 1993
+# shareware doom1.wad in ./wads (see wads/README.md).
 crispy-doom.pkg-path = "crispy-doom"
-# The purist port: 320x200, exactly how it played in 1993. Nice contrast
-# for a booth conversation ("same WAD, two engines, one manifest").
-chocolate-doom.pkg-path = "chocolate-doom"
-# Free (BSD-licensed) IWADs: freedoom1.wad, freedoom2.wad, freedm.wad.
-# The default IWAD is id's 1993 shareware doom1.wad in ./wads (see
-# wads/README.md); Freedoom is the fallback and gives Doom II-style maps.
-freedoom.pkg-path = "freedoom"
 
 ## Environment variables ------------------------------------------------
 ## Defaults for the launcher scripts in ./bin. Override on the command
@@ -37,10 +31,9 @@ on-activate = '''
   # Put the launcher scripts on PATH so `flox activate -- doom` just works.
   export PATH="$FLOX_ENV_PROJECT/bin:$PATH"
 
-  # Where the Doom engines look for IWADs by name (-iwad freedoom1.wad).
-  #   ./wads                      -> shareware doom1.wad (committed); DOOM.WAD / DOOM2.WAD go here too
-  #   $FLOX_ENV/share/games/doom  -> the Freedoom package
-  export DOOMWADPATH="$FLOX_ENV_PROJECT/wads:$FLOX_ENV/share/games/doom${DOOMWADPATH:+:$DOOMWADPATH}"
+  # Where the engine looks for IWADs by name (-iwad doom1.wad):
+  #   ./wads  -> shareware doom1.wad (committed); your own DOOM.WAD / DOOM2.WAD go here too
+  export DOOMWADPATH="$FLOX_ENV_PROJECT/wads${DOOMWADPATH:+:$DOOMWADPATH}"
 '''
 
 ## Profile ---------------------------------------------------------------
@@ -48,7 +41,7 @@ on-activate = '''
 common = '''
   # Only chatter in an interactive shell, never under `flox activate -- cmd`.
   case "$-" in *i*)
-    echo "DOOM environment active: run 'doom' (Freedoom), 'doom-kiosk' (booth loop) or 'smoke-test'."
+    echo "DOOM environment active: run 'doom', 'doom-kiosk' (booth loop) or 'smoke-test'."
     ;;
   esac
 '''

@@ -1,7 +1,7 @@
 # Raspberry Pi setup
 
 From a blank microSD card to DOOM at boot. Written for a Raspberry Pi 4 or 5;
-a Pi 3 works with Chocolate Doom and a lower resolution.
+a Pi 3 works at a lower resolution.
 
 ## 1. Flash the OS
 
@@ -57,9 +57,9 @@ committed, so no catalog resolution and no FloxHub login is needed. You should
 see:
 
 ```
-crispy-doom      OK   (timed 7117 gametics in ... realtics (... fps))
-chocolate-doom   OK   (timed 7117 gametics in ... realtics (... fps))
-smoke-test: all engines ran the demo. The environment is playable.
+doom1.wad        OK   (id Software shareware v1.9, md5 verified)
+crispy-doom      doom1.wad      OK   (timed 5026 gametics in ... realtics (... fps))
+smoke-test: the engine ran the shareware demo. The environment is playable.
 ```
 
 ## 4. Play
@@ -130,12 +130,6 @@ will fight over the display. Either use Lite for the kiosk or set the Pi to
 boot to console (`sudo raspi-config` > System Options > Boot / Auto Login).
 
 ## 6. Optional extras
-
-**Freedoom instead of the shareware episode.** Four full episodes of free maps:
-
-```bash
-DOOM_IWAD=freedoom1.wad flox activate -- doom
-```
 
 **Your own DOOM.WAD.** Copy it from Steam/GOG into `wads/`. It's git-ignored.
 
