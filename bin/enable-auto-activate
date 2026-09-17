@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# One-time setup so that `cd` into this repo activates the DOOM environment
+# and `cd` out deactivates it. After this, no more `flox activate --`:
+#
+#   cd ~/doom-pi-flox
+#   doom
+#
+# Run it from outside the environment, as ./bin/enable-auto-activate.
+# It does exactly two things, both idempotent, and prints each one:
+#   1. installs the Flox prompt hook in your shell's rc file (the hook is
+#      installed by any in-place activation, so we activate a default
+#      environment in your home directory, creating an empty one if needed)
+#   2. records this directory as allowed for auto-activation
+#      (same as answering "y" to Flox's prompt the first time you cd in)
+set -euo pipefail
+
+repo="$(cd "$(dirname "$0")/.." && pwd)"
+
+if ! command -v flox >/dev/null 2>&1; then
+  echo "enable-auto-activate: flox is not installed. See https://flox.dev/docs/install-flox/install/" >&2
+  exit 1
+fi
+
+# 1. Prompt hook -------------------------------------------------------------
+shell_name="$(basename "${SHELL:-bash}")"
+case "$shell_name" in
+  bash) rc="$HOME/.bashrc";  line='eval "$(flox activate -d ~)"' ;;
+  zsh)  rc="$HOME/.zshrc";   line='eval "$(flox activate -d ~)"' ;;
+  fish) rc="$HOME/.config/fish/config.fish"; line='flox activate -d ~ | source' ;;
+  *)    echo "enable-auto-activate: unsupported shell '$shell_name' (bash, zsh, fish)" >&2; exit 1 ;;
+esac
+
+if [ ! -d "$HOME/.flox" ]; then
+  echo "creating an empty default environment in $HOME (hosts the prompt hook)"
+  flox init -d "$HOME" -n default --no-auto-setup >/dev/null 2>&1
+fi
+
+mkdir -p "$(dirname "$rc")"
+if grep -qE 'flox activate( |$)' "$rc" 2>/dev/null; then
+  echo "prompt hook already present in $rc (an in-place 'flox activate' line)"
+else
+  printf '\n# Flox prompt hook: auto-activates allowed environments on cd\n%s\n' "$line" >> "$rc"
+  echo "added to $rc:  $line"
+fi
+
+# 2. Allow this environment --------------------------------------------------
+flox activate allow -d "$repo"
+
+cat <<MSG
+
+Done. Open a new shell, then:
+  cd $repo
+  doom
+MSG

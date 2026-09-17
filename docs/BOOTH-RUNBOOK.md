@@ -13,7 +13,7 @@
 
 1. Point at the Pi playing DOOM. "That's a Raspberry Pi. Nothing on it was apt-installed except git and Flox."
 2. Open the laptop, `cat .flox/env/manifest.toml`. Three packages, ten lines that matter.
-3. `flox activate -- doom -window` on the laptop. "Same manifest, same lockfile, different CPU and OS."
+3. `cd doom-pi-flox` on the laptop (auto-activation, the prompt flips to `flox [doom-pi]`), then `doom -window`. "Same manifest, same lockfile, different CPU and OS."
 4. If they're technical: `.flox/env/manifest.lock`, scroll to `aarch64-linux`. "That's the exact build the Pi is running. The arm64 CI job runs it too."
 5. If they have Flox installed: `flox activate -r <you>/doom-pi -- doom`. No clone.
 6. Hand them the keyboard.

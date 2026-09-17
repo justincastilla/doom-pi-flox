@@ -28,6 +28,7 @@ hand him the keyboard.
 | `bin/doom` | Launcher. Picks the engine and IWAD from `DOOM_PORT` / `DOOM_IWAD`, sets up SDL for a bare console or a desktop. |
 | `bin/doom-kiosk` | Booth loop: relaunches the game whenever a player quits. Config and saves live in `.doom-home/`. |
 | `bin/smoke-test` | Headless timedemo in both engines. Run it before you trust a new SD card. CI runs it on x86_64 and arm64. |
+| `bin/enable-auto-activate` | One-time: make `cd` into this directory activate the environment (Flox native auto-activation). |
 | `bin/get-shareware-wad` | Optional: fetch id's shareware `doom1.wad` (checksum verified) for the real E1M1. |
 | `systemd/doom-kiosk.service` | Boot the Pi straight into DOOM on tty1. |
 | `docs/` | [Feasibility study](docs/FEASIBILITY.md), [Raspberry Pi setup](docs/RASPBERRY-PI-SETUP.md), [booth runbook](docs/BOOTH-RUNBOOK.md). |
@@ -48,6 +49,29 @@ flox activate                                      # interactive shell with ever
 Any flag after `doom` goes straight to the engine (`-fullscreen`, `-nomusic`,
 `-record`, `-playdemo`, `-file mymaps.wad`, ...). `crispy-doom-setup` and
 `chocolate-doom-setup` are also on PATH for key bindings and gamepads.
+
+## Auto-activate: `cd` is the whole setup
+
+Flox can activate the environment when you enter the directory and
+deactivate it when you leave, so the commands above lose their
+`flox activate --` prefix. Consent is per user and per machine (a repo can't
+switch it on for you), so run this once:
+
+```bash
+./bin/enable-auto-activate     # installs the Flox prompt hook, allows this directory
+```
+
+Then, in a new shell:
+
+```bash
+cd doom-pi-flox     # prompt becomes  flox [doom-pi]
+doom                # everything in bin/ is on PATH
+cd ..               # deactivated again
+```
+
+By hand it's two steps: put `eval "$(flox activate -d ~)"` (or `-D` if you
+are logged in to FloxHub) in your shell rc to install the prompt hook, and
+run `flox activate allow` inside the repo. `flox activate deny` reverses it.
 
 ## Raspberry Pi in five minutes
 

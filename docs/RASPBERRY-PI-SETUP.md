@@ -92,6 +92,20 @@ SDL_AUDIODRIVER=alsa flox activate -- doom
 Escape opens the menu; quit from there. Keys: arrows/WASD, Ctrl fire, Space
 use, Shift run.
 
+### Skip the `flox activate --` prefix
+
+Once per user on the Pi:
+
+```bash
+./bin/enable-auto-activate
+```
+
+That installs the Flox prompt hook in `~/.bashrc` and allows this directory,
+so every new shell that `cd`s into `~/doom-pi-flox` lands in the environment
+with `doom`, `doom-kiosk` and `smoke-test` on PATH. Leaving the directory
+deactivates it. The systemd kiosk unit does not rely on this; it calls
+`flox activate` explicitly.
+
 ## 5. Boot straight into the game (kiosk)
 
 ```bash
