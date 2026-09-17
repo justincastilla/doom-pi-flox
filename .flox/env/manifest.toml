@@ -1,6 +1,6 @@
 ## DOOM on a Raspberry Pi, packaged with Flox --------------------------
 ##
-##   flox activate -- doom          # play (Freedoom Phase 1, Crispy Doom)
+##   flox activate -- doom          # play (1993 shareware E1, Crispy Doom)
 ##   flox activate -- doom-kiosk    # booth mode: restarts when a player quits
 ##   flox activate -- smoke-test    # headless timedemo, used by CI
 ##
@@ -20,7 +20,8 @@ crispy-doom.pkg-path = "crispy-doom"
 # for a booth conversation ("same WAD, two engines, one manifest").
 chocolate-doom.pkg-path = "chocolate-doom"
 # Free (BSD-licensed) IWADs: freedoom1.wad, freedoom2.wad, freedm.wad.
-# Lets us ship a playable game without redistributing id's assets.
+# The default IWAD is id's 1993 shareware doom1.wad in ./wads (see
+# wads/README.md); Freedoom is the fallback and gives Doom II-style maps.
 freedoom.pkg-path = "freedoom"
 
 ## Environment variables ------------------------------------------------
@@ -28,7 +29,7 @@ freedoom.pkg-path = "freedoom"
 ## line, e.g.  DOOM_PORT=chocolate-doom flox activate -- doom
 [vars]
 DOOM_PORT = "crispy-doom"
-DOOM_IWAD = "freedoom1.wad"
+DOOM_IWAD = "doom1.wad"
 
 ## Activation hook -------------------------------------------------------
 [hook]
@@ -37,7 +38,7 @@ on-activate = '''
   export PATH="$FLOX_ENV_PROJECT/bin:$PATH"
 
   # Where the Doom engines look for IWADs by name (-iwad freedoom1.wad).
-  #   ./wads                      -> drop doom1.wad / DOOM.WAD / DOOM2.WAD here
+  #   ./wads                      -> shareware doom1.wad (committed); DOOM.WAD / DOOM2.WAD go here too
   #   $FLOX_ENV/share/games/doom  -> the Freedoom package
   export DOOMWADPATH="$FLOX_ENV_PROJECT/wads:$FLOX_ENV/share/games/doom${DOOMWADPATH:+:$DOOMWADPATH}"
 '''

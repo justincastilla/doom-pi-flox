@@ -15,9 +15,9 @@ fi
 export SDL_VIDEODRIVER=dummy
 export SDL_AUDIODRIVER=dummy
 export HOME="$(mktemp -d)"
-: "${DOOMWADPATH:=${FLOX_ENV_PROJECT:-$PWD}/wads:$FLOX_ENV/share/games/doom}"
+project="${FLOX_ENV_PROJECT:-$PWD}"
+: "${DOOMWADPATH:=$project/wads:$FLOX_ENV/share/games/doom}"
 export DOOMWADPATH
-: "${DOOM_IWAD:=freedoom1.wad}"
 
 # GNU `timeout` is not on macOS, so: run the command in the background and
 # kill it if it is still there after $1 seconds. Returns the command's status.
@@ -37,30 +37,42 @@ run_with_timeout() {
 echo "system:      $(uname -m) $(uname -s)"
 echo "flox env:    $FLOX_ENV"
 echo "wad path:    $DOOMWADPATH"
-echo "iwad:        $DOOM_IWAD"
 echo
 
 fail=0
-for port in crispy-doom chocolate-doom; do
-  printf '%-16s ' "$port"
-  if ! command -v "$port" >/dev/null 2>&1; then
-    echo "MISSING"; fail=1; continue
-  fi
-  # -timedemo plays the IWAD's DEMO1 lump as fast as possible and exits.
-  # Doom has reported timedemo results through I_Error() since 1993, so the
-  # exit status is non-zero even on success; the "timed N gametics" line is
-  # the real verdict.
-  out=$(run_with_timeout 120 "$port" -iwad "$DOOM_IWAD" -nosound -nomusic -window -timedemo demo1 2>&1 || true)
-  if result=$(printf '%s\n' "$out" | grep -m1 -oE 'timed [0-9]+ gametics in [0-9]+ realtics \([0-9.]+ fps\)'); then
-    echo "OK   ($result)"
-  else
-    echo "FAIL"; printf '%s\n' "$out" | tail -20; fail=1
-  fi
+
+# The committed shareware IWAD must be id's v1.9 doom1.wad, byte for byte.
+printf '%-16s ' "doom1.wad"
+if [ -f "$project/wads/doom1.wad" ]; then
+  if command -v md5sum >/dev/null 2>&1; then sum=$(md5sum "$project/wads/doom1.wad" | cut -d' ' -f1); else sum=$(md5 -q "$project/wads/doom1.wad"); fi
+  if [ "$sum" = "f0cefca49926d00903cf57551d901abe" ]; then echo "OK   (id Software shareware v1.9, md5 verified)"; else echo "FAIL (md5 $sum)"; fail=1; fi
+else
+  echo "MISSING ($project/wads/doom1.wad)"; fail=1
+fi
+
+# -timedemo plays the IWAD's DEMO1 lump as fast as possible and exits.
+# Doom has reported timedemo results through I_Error() since 1993, so the
+# exit status is non-zero even on success; the "timed N gametics" line is
+# the real verdict.
+for iwad in doom1.wad freedoom1.wad; do
+  for port in crispy-doom chocolate-doom; do
+    printf '%-16s ' "$port"
+    printf '%-14s ' "$iwad"
+    if ! command -v "$port" >/dev/null 2>&1; then
+      echo "MISSING"; fail=1; continue
+    fi
+    out=$(run_with_timeout 120 "$port" -iwad "$iwad" -nosound -nomusic -window -timedemo demo1 2>&1 || true)
+    if result=$(printf '%s\n' "$out" | grep -m1 -oE 'timed [0-9]+ gametics in [0-9]+ realtics \([0-9.]+ fps\)'); then
+      echo "OK   ($result)"
+    else
+      echo "FAIL"; printf '%s\n' "$out" | tail -20; fail=1
+    fi
+  done
 done
 
 echo
 if [ "$fail" -eq 0 ]; then
-  echo "smoke-test: all engines ran the demo. The environment is playable."
+  echo "smoke-test: all engines ran the demo in every IWAD. The environment is playable."
 else
   echo "smoke-test: something failed, see output above." >&2
 fi

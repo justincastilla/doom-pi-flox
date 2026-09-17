@@ -4,10 +4,12 @@
 .flox/log/
 .flox/lib/
 
-# Commercial or shareware IWADs are never committed. See wads/README.md.
+# IWADs: only id's freely redistributable shareware doom1.wad is committed.
+# Commercial DOOM.WAD / DOOM2.WAD must never be. See wads/README.md.
 wads/*.wad
 wads/*.WAD
 wads/*.zip
+!wads/doom1.wad
 
 # Doom writes config and savegames here when HOME is redirected in kiosk mode
 .doom-home/

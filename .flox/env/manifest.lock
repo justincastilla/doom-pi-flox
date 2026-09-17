@@ -14,11 +14,11 @@
       }
     },
     "vars": {
-      "DOOM_IWAD": "freedoom1.wad",
+      "DOOM_IWAD": "doom1.wad",
       "DOOM_PORT": "crispy-doom"
     },
     "hook": {
-      "on-activate": "  # Put the launcher scripts on PATH so `flox activate -- doom` just works.\n  export PATH=\"$FLOX_ENV_PROJECT/bin:$PATH\"\n\n  # Where the Doom engines look for IWADs by name (-iwad freedoom1.wad).\n  #   ./wads                      -> drop doom1.wad / DOOM.WAD / DOOM2.WAD here\n  #   $FLOX_ENV/share/games/doom  -> the Freedoom package\n  export DOOMWADPATH=\"$FLOX_ENV_PROJECT/wads:$FLOX_ENV/share/games/doom${DOOMWADPATH:+:$DOOMWADPATH}\"\n"
+      "on-activate": "  # Put the launcher scripts on PATH so `flox activate -- doom` just works.\n  export PATH=\"$FLOX_ENV_PROJECT/bin:$PATH\"\n\n  # Where the Doom engines look for IWADs by name (-iwad freedoom1.wad).\n  #   ./wads                      -> shareware doom1.wad (committed); DOOM.WAD / DOOM2.WAD go here too\n  #   $FLOX_ENV/share/games/doom  -> the Freedoom package\n  export DOOMWADPATH=\"$FLOX_ENV_PROJECT/wads:$FLOX_ENV/share/games/doom${DOOMWADPATH:+:$DOOMWADPATH}\"\n"
     },
     "profile": {
       "common": "  # Only chatter in an interactive shell, never under `flox activate -- cmd`.\n  case \"$-\" in *i*)\n    echo \"DOOM environment active: run 'doom' (Freedoom), 'doom-kiosk' (booth loop) or 'smoke-test'.\"\n    ;;\n  esac\n"
