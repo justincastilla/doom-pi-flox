@@ -40,7 +40,12 @@ if [ -z "${found:-}" ] || [ ! -f "$found" ]; then
   exit 1
 fi
 
-actual="$(md5sum "$found" | cut -d' ' -f1)"
+# md5sum on Linux, md5 on macOS
+if command -v md5sum >/dev/null 2>&1; then
+  actual="$(md5sum "$found" | cut -d' ' -f1)"
+else
+  actual="$(md5 -q "$found")"
+fi
 if [ "$actual" != "$EXPECTED_MD5" ]; then
   echo "get-shareware-wad: checksum mismatch (got $actual, expected $EXPECTED_MD5). Refusing to install." >&2
   exit 1

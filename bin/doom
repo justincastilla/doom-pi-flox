@@ -26,10 +26,12 @@ is_raspberry_pi() {
   [ -r /proc/device-tree/model ] && tr -d '\0' < /proc/device-tree/model | grep -qi "raspberry pi"
 }
 
-# Video backend selection (SDL picks a sensible one itself when a desktop is
-# running). With no Wayland/X11 session, e.g. Raspberry Pi OS Lite or a tty,
-# talk to the display straight through the kernel's DRM/KMS interface.
-if [ -z "${SDL_VIDEODRIVER:-}" ] && [ -z "${WAYLAND_DISPLAY:-}" ] && [ -z "${DISPLAY:-}" ]; then
+# Video backend selection. SDL picks the right one itself on macOS and on a
+# Linux desktop. The one case it can't guess: Linux with no Wayland/X11
+# session (Raspberry Pi OS Lite, or a tty), where we talk to the display
+# straight through the kernel's DRM/KMS interface.
+if [ "$(uname -s)" = "Linux" ] && [ -z "${SDL_VIDEODRIVER:-}" ] \
+   && [ -z "${WAYLAND_DISPLAY:-}" ] && [ -z "${DISPLAY:-}" ]; then
   export SDL_VIDEODRIVER=kmsdrm
 fi
 

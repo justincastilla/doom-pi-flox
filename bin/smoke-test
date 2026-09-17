@@ -19,6 +19,21 @@ export HOME="$(mktemp -d)"
 export DOOMWADPATH
 : "${DOOM_IWAD:=freedoom1.wad}"
 
+# GNU `timeout` is not on macOS, so: run the command in the background and
+# kill it if it is still there after $1 seconds. Returns the command's status.
+run_with_timeout() {
+  local secs=$1; shift
+  "$@" &
+  local pid=$!
+  ( trap 'kill "$s" 2>/dev/null; exit 0' TERM
+    sleep "$secs" & s=$!; wait "$s"
+    kill "$pid" 2>/dev/null ) >/dev/null 2>&1 &
+  local watchdog=$!
+  wait "$pid"; local status=$?
+  kill "$watchdog" 2>/dev/null
+  return "$status"
+}
+
 echo "system:      $(uname -m) $(uname -s)"
 echo "flox env:    $FLOX_ENV"
 echo "wad path:    $DOOMWADPATH"
@@ -35,7 +50,7 @@ for port in crispy-doom chocolate-doom; do
   # Doom has reported timedemo results through I_Error() since 1993, so the
   # exit status is non-zero even on success; the "timed N gametics" line is
   # the real verdict.
-  out=$(timeout 120 "$port" -iwad "$DOOM_IWAD" -nosound -nomusic -window -timedemo demo1 2>&1 || true)
+  out=$(run_with_timeout 120 "$port" -iwad "$DOOM_IWAD" -nosound -nomusic -window -timedemo demo1 2>&1 || true)
   if result=$(printf '%s\n' "$out" | grep -m1 -oE 'timed [0-9]+ gametics in [0-9]+ realtics \([0-9.]+ fps\)'); then
     echo "OK   ($result)"
   else
