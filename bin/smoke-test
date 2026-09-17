@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# Headless proof that the environment is playable: run the built-in demo
+# through both engines with SDL's dummy video/audio drivers. This is what
+# CI runs on x86_64 and arm64 runners, and what you run on the Pi before
+# plugging in a screen.
+#
+#   flox activate -- smoke-test
+set -euo pipefail
+
+if [ -z "${FLOX_ENV:-}" ]; then
+  echo "smoke-test: not inside the Flox environment. Run: flox activate -- smoke-test" >&2
+  exit 1
+fi
+
+export SDL_VIDEODRIVER=dummy
+export SDL_AUDIODRIVER=dummy
+export HOME="$(mktemp -d)"
+: "${DOOMWADPATH:=${FLOX_ENV_PROJECT:-$PWD}/wads:$FLOX_ENV/share/games/doom}"
+export DOOMWADPATH
+: "${DOOM_IWAD:=freedoom1.wad}"
+
+echo "system:      $(uname -m) $(uname -s)"
+echo "flox env:    $FLOX_ENV"
+echo "wad path:    $DOOMWADPATH"
+echo "iwad:        $DOOM_IWAD"
+echo
+
+fail=0
+for port in crispy-doom chocolate-doom; do
+  printf '%-16s ' "$port"
+  if ! command -v "$port" >/dev/null 2>&1; then
+    echo "MISSING"; fail=1; continue
+  fi
+  # -timedemo plays the IWAD's DEMO1 lump as fast as possible and exits.
+  # Doom has reported timedemo results through I_Error() since 1993, so the
+  # exit status is non-zero even on success; the "timed N gametics" line is
+  # the real verdict.
+  out=$(timeout 120 "$port" -iwad "$DOOM_IWAD" -nosound -nomusic -window -timedemo demo1 2>&1 || true)
+  if result=$(printf '%s\n' "$out" | grep -m1 -oE 'timed [0-9]+ gametics in [0-9]+ realtics \([0-9.]+ fps\)'); then
+    echo "OK   ($result)"
+  else
+    echo "FAIL"; printf '%s\n' "$out" | tail -20; fail=1
+  fi
+done
+
+echo
+if [ "$fail" -eq 0 ]; then
+  echo "smoke-test: all engines ran the demo. The environment is playable."
+else
+  echo "smoke-test: something failed, see output above." >&2
+fi
+exit "$fail"
