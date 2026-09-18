@@ -1,5 +1,9 @@
 # Feasibility: DOOM on a Raspberry Pi, packaged with Flox
 
+> Written before the repo became the `doom_share` package. The findings
+> still hold; where it says "the environment" read "an environment with an
+> engine plus `doom_share`", and `bin/doom` is now `doom_share`.
+
 **Verdict: feasible, and most of it is already proven.** Every component
 needed is in the Flox catalog with an `aarch64-linux` build, the environment
 locks for all four platforms, and the engine runs a full timedemo inside the

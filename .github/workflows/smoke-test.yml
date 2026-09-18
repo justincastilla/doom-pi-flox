@@ -1,5 +1,5 @@
-# Prove the environment activates and DOOM runs, on both CPU architectures.
-# The arm64 job is the same aarch64-linux lockfile entry the Raspberry Pi uses.
+# Build the doom_share package and play it with an engine from the catalog,
+# on both CPU architectures. The arm64 job is the Raspberry Pi's aarch64-linux.
 name: smoke-test
 
 on:
@@ -17,13 +17,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Same installer a person runs on the Pi. The lockfile is committed, so
-      # activation needs no catalog resolution (and no FloxHub login).
       - name: Install Flox
         run: |
           curl -fsSL https://get.flox.dev | sh
           flox --version
           flox config --set disable_metrics true
 
-      - name: Headless timedemo of the shareware WAD
-        run: flox activate -- smoke-test
+      - name: Build doom_share and play it
+        run: ./ci/smoke-test

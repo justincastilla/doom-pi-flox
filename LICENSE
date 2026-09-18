@@ -23,6 +23,6 @@ SOFTWARE.
 ---
 
 The software this repository installs has its own licenses, unchanged:
-Crispy Doom is GPL-2.0-or-later. The id Software shareware IWAD
-(wads/doom1.wad) is distributed unmodified under id's shareware terms and is
-not covered by the license above.
+The id Software shareware IWAD (wads/doom1.wad) is distributed unmodified
+under id's shareware terms and is not covered by the license above. Doom
+engines installed alongside this package carry their own licenses.

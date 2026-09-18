@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+# doom_share: play id Software's 1993 shareware DOOM (Episode 1, "Knee-Deep in
+# the Dead") with whatever Doom engine is on PATH.
+#
+#   flox install crispy-doom <catalog>/doom_share
+#   doom_share                       # E1M1
+#   doom_share -warp 1 3 -skill 4    # any engine flag passes through
+#   doom_share --engine gzdoom       # pick the engine explicitly (or set DOOMPORT)
+#   doom_share --kiosk               # booth mode: restart when a player quits
+#
+# This package is data: the WAD lives in share/games/doom next to this
+# script. The engine is whichever of these is installed, first match wins:
+ENGINES="crispy-doom chocolate-doom woof-doom nugget-doom dsda-doom prboom-plus gzdoom uzdoom odamex"
+set -euo pipefail
+
+usage() { sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//'; }
+
+# --- locate the WAD --------------------------------------------------------
+# Inside a Flox environment the package is linked under $FLOX_ENV. Outside
+# one (e.g. ./result-doom_share/bin/doom_share) resolve relative to this file.
+wad_dir=""
+if [ -n "${FLOX_ENV:-}" ] && [ -f "$FLOX_ENV/share/games/doom/doom1.wad" ]; then
+  wad_dir="$FLOX_ENV/share/games/doom"
+else
+  self="$0"
+  while [ -L "$self" ]; do
+    target="$(readlink "$self")"
+    case "$target" in /*) self="$target" ;; *) self="$(dirname "$self")/$target" ;; esac
+  done
+  wad_dir="$(cd "$(dirname "$self")/../share/games/doom" 2>/dev/null && pwd || true)"
+fi
+if [ ! -f "$wad_dir/doom1.wad" ]; then
+  echo "doom_share: cannot find doom1.wad (looked in '$wad_dir')" >&2
+  exit 1
+fi
+export DOOMWADPATH="$wad_dir${DOOMWADPATH:+:$DOOMWADPATH}"
+
+# --- options ---------------------------------------------------------------
+kiosk=0
+engine="${DOOMPORT:-}"
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --kiosk)  kiosk=1; shift ;;
+    --engine) engine="$2"; shift 2 ;;
+    --engine=*) engine="${1#--engine=}"; shift ;;
+    --help|-h) usage; exit 0 ;;
+    --) shift; break ;;
+    *) break ;;
+  esac
+done
+
+if [ -z "$engine" ]; then
+  for e in $ENGINES; do
+    if command -v "$e" >/dev/null 2>&1; then engine="$e"; break; fi
+  done
+fi
+if [ -z "$engine" ] || ! command -v "$engine" >/dev/null 2>&1; then
+  cat >&2 <<MSG
+doom_share: no Doom engine found on PATH.
+Install one next to this package, for example:
+  flox install crispy-doom
+Engines searched: $ENGINES (override with --engine NAME or DOOMPORT=NAME)
+MSG
+  exit 1
+fi
+
+# --- display defaults for a Linux console / Raspberry Pi -------------------
+# Linux with no Wayland/X11 session (Raspberry Pi OS Lite, a tty): render
+# straight through the kernel's DRM/KMS. SDL picks correctly everywhere else.
+if [ "$(uname -s)" = "Linux" ] && [ -z "${SDL_VIDEODRIVER:-}" ] \
+   && [ -z "${WAYLAND_DISPLAY:-}" ] && [ -z "${DISPLAY:-}" ]; then
+  export SDL_VIDEODRIVER=kmsdrm
+fi
+# On a Raspberry Pi default to SDL's software scaler; Doom renders in
+# software anyway. DOOM_SHARE_RENDER=gpu tries the OpenGL ES path instead.
+if [ -z "${SDL_RENDER_DRIVER:-}" ] && [ "${DOOM_SHARE_RENDER:-auto}" != "gpu" ] \
+   && [ -r /proc/device-tree/model ] \
+   && tr -d '\0' < /proc/device-tree/model | grep -qi "raspberry pi"; then
+  export SDL_RENDER_DRIVER=software
+fi
+
+# --- run -------------------------------------------------------------------
+if [ "$kiosk" -eq 0 ]; then
+  exec "$engine" -iwad doom1.wad "$@"
+fi
+
+# Kiosk: keep the game up. Config and saves go to a scratch HOME so a reset
+# for the next player is `rm -rf ${DOOM_SHARE_HOME}`.
+: "${DOOM_SHARE_HOME:=${XDG_STATE_HOME:-$HOME/.local/state}/doom_share-kiosk}"
+: "${DOOM_SHARE_KIOSK_DELAY:=2}"
+mkdir -p "$DOOM_SHARE_HOME"
+export HOME="$DOOM_SHARE_HOME" XDG_CONFIG_HOME="$DOOM_SHARE_HOME/.config" XDG_DATA_HOME="$DOOM_SHARE_HOME/.local/share"
+trap 'echo "doom_share: kiosk stopping"; exit 0' INT TERM
+while :; do
+  echo "doom_share: launching $engine (kiosk)"
+  "$engine" -iwad doom1.wad -fullscreen "$@" || true
+  echo "doom_share: engine exited, restarting in ${DOOM_SHARE_KIOSK_DELAY}s"
+  sleep "$DOOM_SHARE_KIOSK_DELAY"
+done

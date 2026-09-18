@@ -1,7 +1,9 @@
 # DOOM kiosk: boot the Raspberry Pi straight into the game on tty1.
 #
-# Install (as the user that cloned the repo, here assumed to be "pi" with the
-# checkout at /home/pi/doom-pi-flox; adjust the three paths and User= if not):
+# Assumes a consumer environment at /home/pi/doom created with:
+#   mkdir ~/doom && cd ~/doom && flox init
+#   flox install crispy-doom justincastilla/doom_share
+# Adjust User=, Group=, HOME and the two paths if your user isn't "pi".
 #
 #   sudo cp systemd/doom-kiosk.service /etc/systemd/system/
 #   sudo systemctl daemon-reload
@@ -9,11 +11,9 @@
 #
 # Stop it (and get your console back):  sudo systemctl stop doom-kiosk
 # Logs:                                 journalctl -u doom-kiosk -f
-#
-# The unit runs `flox activate` non-interactively; the environment's hook sets
-# up PATH and DOOMWADPATH exactly as it does for a human at a shell.
+# Reset saves/config between players:   rm -rf ~/.local/state/doom_share-kiosk
 [Unit]
-Description=DOOM kiosk (Flox environment)
+Description=DOOM kiosk (doom_share via Flox)
 After=multi-user.target systemd-user-sessions.service
 Conflicts=getty@tty1.service
 
@@ -22,13 +22,13 @@ Type=simple
 User=pi
 Group=pi
 SupplementaryGroups=video render input audio
-WorkingDirectory=/home/pi/doom-pi-flox
+WorkingDirectory=/home/pi/doom
 Environment=HOME=/home/pi
 # No compositor on tty1: render straight through the kernel's KMS/DRM.
 Environment=SDL_VIDEODRIVER=kmsdrm
 # Uncomment if audio is silent on the console (PipeWire/Pulse only run inside a login session).
 #Environment=SDL_AUDIODRIVER=alsa
-ExecStart=/usr/bin/flox activate --dir /home/pi/doom-pi-flox -- doom-kiosk
+ExecStart=/usr/bin/flox activate --dir /home/pi/doom -- doom_share --kiosk
 Restart=always
 RestartSec=3
 StandardInput=tty

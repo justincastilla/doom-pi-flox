@@ -6,19 +6,18 @@ a Pi 3 works at a lower resolution.
 ## 1. Flash the OS
 
 Use Raspberry Pi Imager and pick **Raspberry Pi OS (64-bit)**. Lite is enough
-for a kiosk; the desktop version also works if you want to alt-tab to a
-terminal during the demo. **It must be the 64-bit image**: Flox environments
-are built for `aarch64-linux`, and the 32-bit OS reports `armv7l`.
+for a kiosk; the desktop version also works. **It must be the 64-bit image**:
+Flox packages are built for `aarch64-linux`, and the 32-bit OS reports
+`armv7l`.
 
 In Imager's settings, set the hostname, a user (the docs assume `pi`), enable
-SSH and put in the venue Wi-Fi. Or bring an Ethernet cable; conference Wi-Fi
-is a lottery.
+SSH and put in the venue Wi-Fi. Or bring an Ethernet cable.
 
 Boot it, then:
 
 ```bash
 uname -m            # must print aarch64
-sudo apt update && sudo apt install -y git curl
+sudo apt update && sudo apt install -y curl
 ```
 
 ## 2. Install Flox
@@ -26,40 +25,31 @@ sudo apt update && sudo apt install -y git curl
 ```bash
 curl -fsSL https://get.flox.dev | sh
 flox --version
+flox config --set disable_metrics true     # optional
 ```
 
-The installer detects Debian-on-aarch64 and installs the `.deb`, which also
-registers an apt source for future upgrades. If you prefer to see the package
-first:
+## 3. Make the game environment
+
+You don't clone this repo on the Pi. You make an environment and install two
+packages from the catalog: an engine, and `doom_share`.
 
 ```bash
-curl -LO https://downloads.flox.dev/by-env/stable/deb/flox-1.16.0.aarch64-linux.deb
-sudo apt install ./flox-1.16.0.aarch64-linux.deb
+mkdir ~/doom && cd ~/doom
+flox init
+flox install crispy-doom justincastilla/doom_share
 ```
 
-Optional, keeps the console quiet:
+The first install downloads roughly 100 MB, so do it at the hotel, not at the
+booth. After that the environment is offline and instant.
 
-```bash
-flox config --set disable_metrics true
-```
-
-## 3. Get the environment
+If `doom_share` is not visible to you (personal catalogs are private to
+their owner), build it from this repo on the Pi instead:
 
 ```bash
 git clone https://github.com/justincastilla/doom-pi-flox ~/doom-pi-flox
-cd ~/doom-pi-flox
-flox activate -- smoke-test
-```
-
-The first activation downloads the pinned packages (roughly 150 MB, so a
-couple of minutes on venue Wi-Fi; do this at the hotel). The lockfile is
-committed, so no catalog resolution and no FloxHub login is needed. You should
-see:
-
-```
-doom1.wad        OK   (id Software shareware v1.9, md5 verified)
-crispy-doom      doom1.wad      OK   (timed 5026 gametics in ... realtics (... fps))
-smoke-test: the engine ran the shareware demo. The environment is playable.
+cd ~/doom-pi-flox && flox build          # -> result-doom_share/
+cd ~/doom && flox install crispy-doom
+# then use ~/doom-pi-flox/result-doom_share/bin/doom_share in place of doom_share below
 ```
 
 ## 4. Play
@@ -67,57 +57,45 @@ smoke-test: the engine ran the shareware demo. The environment is playable.
 From the console (Lite, or Ctrl-Alt-F2 on the desktop image):
 
 ```bash
-flox activate -- doom        # id's shareware Episode 1, Crispy Doom
+cd ~/doom
+flox activate -- doom_share
 ```
 
-`bin/doom` notices there is no Wayland or X11 session and sets
+The launcher notices there is no Wayland or X11 session and sets
 `SDL_VIDEODRIVER=kmsdrm`, so the engine takes over the display directly. On a
-Pi it also defaults to SDL's software scaler (`SDL_RENDER_DRIVER=software`),
-which is plenty for Doom. To try the GPU path instead:
+Pi it also defaults to SDL's software scaler, which is plenty for Doom. To try
+the GPU path instead:
 
 ```bash
-DOOM_RENDER=gpu flox activate -- doom
+DOOM_SHARE_RENDER=gpu flox activate -- doom_share
 ```
 
-From the desktop, just run the same command in a terminal; add `-window` if
-you want it windowed.
+From the desktop, run the same command in a terminal; add `-window` if you
+want it windowed.
 
 Sound: on the desktop SDL finds PipeWire on its own. On the console, if it's
 silent, force ALSA:
 
 ```bash
-SDL_AUDIODRIVER=alsa flox activate -- doom
+SDL_AUDIODRIVER=alsa flox activate -- doom_share
 ```
 
 Escape opens the menu; quit from there. Keys: arrows/WASD, Ctrl fire, Space
 use, Shift run.
 
-### Skip the `flox activate --` prefix
-
-Once per user on the Pi:
-
-```bash
-./bin/enable-auto-activate
-```
-
-That installs the Flox prompt hook in `~/.bashrc` and allows this directory,
-so every new shell that `cd`s into `~/doom-pi-flox` lands in the environment
-with `doom`, `doom-kiosk` and `smoke-test` on PATH. Leaving the directory
-deactivates it. The systemd kiosk unit does not rely on this; it calls
-`flox activate` explicitly.
-
 ## 5. Boot straight into the game (kiosk)
 
 ```bash
-sudo cp systemd/doom-kiosk.service /etc/systemd/system/
-# if your user or path differ, fix User=, Group=, WorkingDirectory=, HOME and ExecStart in the copy
+sudo cp ~/doom-pi-flox/systemd/doom-kiosk.service /etc/systemd/system/   # or download just that file
+# fix User=, Group=, WorkingDirectory=, HOME and ExecStart if your user or path differ
 sudo systemctl daemon-reload
 sudo systemctl enable --now doom-kiosk
 ```
 
-The unit takes over tty1 and runs `flox activate -- doom-kiosk`. When a
-player quits, the game restarts two seconds later. Config and savegames land in
-`~/doom-pi-flox/.doom-home/` so a reset is `rm -rf .doom-home`.
+The unit takes over tty1 and runs `flox activate -- doom_share --kiosk`.
+When a player quits, the game restarts two seconds later. Config and saves go
+to `~/.local/state/doom_share-kiosk/`, so a reset between players is
+`rm -rf` on that directory.
 
 ```bash
 journalctl -u doom-kiosk -f          # watch it
@@ -126,40 +104,31 @@ sudo systemctl disable doom-kiosk    # stop it starting at boot
 ```
 
 If you use the desktop image with auto-login, the desktop and the kiosk unit
-will fight over the display. Either use Lite for the kiosk or set the Pi to
-boot to console (`sudo raspi-config` > System Options > Boot / Auto Login).
+will fight over the display. Use Lite for the kiosk, or set the Pi to boot to
+console (`sudo raspi-config` > System Options > Boot / Auto Login).
 
 ## 6. Optional extras
 
-**Your own DOOM.WAD.** Copy it from Steam/GOG into `wads/`. It's git-ignored.
+**Gamepad.** `flox activate -- crispy-doom-setup`, enable the joystick and
+bind buttons. Under the kiosk unit the config lives in
+`~/.local/state/doom_share-kiosk/.local/share/crispy-doom/`.
 
-```bash
-DOOM_IWAD=DOOM.WAD flox activate -- doom
-```
+**Another engine.** `flox install gzdoom` then `doom_share --engine gzdoom`.
+GZDoom needs a working GPU path, which is the one thing untested on a Pi.
 
-**Gamepad.** `flox activate -- crispy-doom-setup`, enable the joystick and bind
-buttons. Under the kiosk unit the config file is in `.doom-home/.local/share/crispy-doom/`.
-
-**Publish to FloxHub** so the booth pitch is one command with no clone:
-
-```bash
-flox auth login
-flox push
-# on any machine:
-flox activate -r <your-floxhub-handle>/doom-pi -- doom
-```
-
-Note that `flox push` publishes the manifest, not the `wads/` directory, so
-commercial WADs never leave your machine.
+**Your own DOOM.WAD.** Registered copies (Steam, GOG) work with any engine:
+put the file somewhere and run `crispy-doom -iwad /path/to/DOOM.WAD`. Never
+commit or publish it.
 
 ## Troubleshooting
 
 | Symptom | Fix |
 | --- | --- |
 | `uname -m` says `armv7l` | 32-bit OS. Re-flash with the 64-bit image. |
-| `flox activate` says no packages for this system | Same cause, or `options.systems` was edited. Must include `aarch64-linux`. |
-| Black screen, then back to the shell | Look at the last lines: an EGL/GBM error means the GPU path failed. `bin/doom` already forces the software renderer on a Pi; make sure `DOOM_RENDER=gpu` isn't set. Also confirm your user is in the `video` and `render` groups. |
+| `flox install` says no package for this system | Same cause. `aarch64-linux` is required. |
+| `doom_share: no Doom engine found on PATH` | Install one in the same environment: `flox install crispy-doom`. |
+| Black screen, then back to the shell | Read the last lines: an EGL/GBM error means the GPU path failed. Make sure `DOOM_SHARE_RENDER=gpu` isn't set, and that your user is in the `video` and `render` groups. |
 | `Could not initialize SDL video: kmsdrm not available` | A compositor already owns the display. Run from a real tty (Ctrl-Alt-F2), or on the desktop unset `SDL_VIDEODRIVER`. |
 | No sound on the console | `SDL_AUDIODRIVER=alsa`, and check `aplay -l` shows the HDMI device. |
-| Game runs but keyboard does nothing under systemd | The unit needs `StandardInput=tty` and `TTYPath=/dev/tty1` (both set) and the user in the `input` group. |
-| First activation is slow | It's downloading. Do it at the hotel, not at the booth. Afterwards activation is instant and offline. |
+| Keyboard does nothing under systemd | The unit needs `StandardInput=tty` and `TTYPath=/dev/tty1` (both set) and the user in the `input` group. |
+| First activation is slow | It's downloading. Do it at the hotel. |

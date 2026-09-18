@@ -1,51 +1,40 @@
-## DOOM on a Raspberry Pi, packaged with Flox --------------------------
+## doom_share: id Software's 1993 shareware DOOM as a Flox package -------
 ##
-##   flox activate -- doom          # play (1993 shareware E1, Crispy Doom)
-##   flox activate -- doom-kiosk    # booth mode: restarts when a player quits
-##   flox activate -- smoke-test    # headless timedemo, used by CI
+##   flox build                # -> result-doom_share/{bin/doom_share,share/games/doom/doom1.wad}
+##   flox publish              # -> <your-catalog>/doom_share on FloxHub
 ##
-##   Manifest reference: https://flox.dev/docs/reference/command-reference/manifest.toml/
+## Consumers pair it with any Doom engine from the catalog:
+##   flox install crispy-doom <catalog>/doom_share
+##   doom_share
+##
+## Manifest reference: https://flox.dev/docs/reference/command-reference/manifest.toml/
 ## ----------------------------------------------------------------------
 schema-version = "1.16.0"
 
-## Packages ------------------------------------------------------------
-## Built for aarch64-linux (Raspberry Pi 3/4/5, 64-bit OS) as well as
-## x86_64-linux and both macOS architectures, so the same lockfile works
-## on the Pi, a laptop, and CI.
+## Build-time tools only. Nothing here is a runtime dependency of the
+## package (see runtime-packages below); the engine is the consumer's choice.
 [install]
-# Limit-removing Doom port based on Chocolate Doom: higher resolution,
-# widescreen, still vanilla-compatible. The game data is id's 1993
-# shareware doom1.wad in ./wads (see wads/README.md).
-crispy-doom.pkg-path = "crispy-doom"
+coreutils.pkg-path = "coreutils"
+gnused.pkg-path = "gnused"
 
-## Environment variables ------------------------------------------------
-## Defaults for the launcher scripts in ./bin. Override on the command
-## line, e.g.  DOOM_PORT=chocolate-doom flox activate -- doom
-[vars]
-DOOM_PORT = "crispy-doom"
-DOOM_IWAD = "doom1.wad"
-
-## Activation hook -------------------------------------------------------
-[hook]
-on-activate = '''
-  # Put the launcher scripts on PATH so `flox activate -- doom` just works.
-  export PATH="$FLOX_ENV_PROJECT/bin:$PATH"
-
-  # Where the engine looks for IWADs by name (-iwad doom1.wad):
-  #   ./wads  -> shareware doom1.wad (committed); your own DOOM.WAD / DOOM2.WAD go here too
-  export DOOMWADPATH="$FLOX_ENV_PROJECT/wads${DOOMWADPATH:+:$DOOMWADPATH}"
+[build.doom_share]
+description = "DOOM shareware v1.9 by id Software (Episode 1: Knee-Deep in the Dead) plus a launcher for any Doom engine"
+version = "1.9"
+# Pure: built from git-tracked files only, no network. This is what makes
+# `flox publish` reproducible: the WAD in the package is the WAD in git.
+sandbox = "pure"
+# The package is data plus a shell script; it needs no packages at runtime.
+runtime-packages = []
+command = '''
+  set -euo pipefail
+  mkdir -p "$out/bin" "$out/share/games/doom" "$out/share/doc/doom_share"
+  cp wads/doom1.wad "$out/share/games/doom/doom1.wad"
+  cp bin/doom_share "$out/bin/doom_share"
+  chmod 0755 "$out/bin/doom_share"
+  cp LICENSE README.md "$out/share/doc/doom_share/"
+  # Belt and braces: refuse to package anything but the v1.9 shareware WAD.
+  echo "f0cefca49926d00903cf57551d901abe  $out/share/games/doom/doom1.wad" | md5sum -c -
 '''
 
-## Profile ---------------------------------------------------------------
-[profile]
-common = '''
-  # Only chatter in an interactive shell, never under `flox activate -- cmd`.
-  case "$-" in *i*)
-    echo "DOOM environment active: run 'doom', 'doom-kiosk' (booth loop) or 'smoke-test'."
-    ;;
-  esac
-'''
-
-## Options ---------------------------------------------------------------
 [options]
 systems = ["aarch64-linux", "x86_64-linux", "aarch64-darwin", "x86_64-darwin"]

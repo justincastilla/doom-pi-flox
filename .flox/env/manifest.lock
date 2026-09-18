@@ -3,19 +3,12 @@
   "manifest": {
     "schema-version": "1.16.0",
     "install": {
-      "crispy-doom": {
-        "pkg-path": "crispy-doom"
+      "coreutils": {
+        "pkg-path": "coreutils"
+      },
+      "gnused": {
+        "pkg-path": "gnused"
       }
-    },
-    "vars": {
-      "DOOM_IWAD": "doom1.wad",
-      "DOOM_PORT": "crispy-doom"
-    },
-    "hook": {
-      "on-activate": "  # Put the launcher scripts on PATH so `flox activate -- doom` just works.\n  export PATH=\"$FLOX_ENV_PROJECT/bin:$PATH\"\n\n  # Where the engine looks for IWADs by name (-iwad doom1.wad):\n  #   ./wads  -> shareware doom1.wad (committed); your own DOOM.WAD / DOOM2.WAD go here too\n  export DOOMWADPATH=\"$FLOX_ENV_PROJECT/wads${DOOMWADPATH:+:$DOOMWADPATH}\"\n"
-    },
-    "profile": {
-      "common": "  # Only chatter in an interactive shell, never under `flox activate -- cmd`.\n  case \"$-\" in *i*)\n    echo \"DOOM environment active: run 'doom', 'doom-kiosk' (booth loop) or 'smoke-test'.\"\n    ;;\n  esac\n"
     },
     "options": {
       "systems": [
@@ -24,124 +17,290 @@
         "aarch64-darwin",
         "x86_64-darwin"
       ]
+    },
+    "build": {
+      "doom_share": {
+        "command": "  set -euo pipefail\n  mkdir -p \"$out/bin\" \"$out/share/games/doom\" \"$out/share/doc/doom_share\"\n  cp wads/doom1.wad \"$out/share/games/doom/doom1.wad\"\n  cp bin/doom_share \"$out/bin/doom_share\"\n  chmod 0755 \"$out/bin/doom_share\"\n  cp LICENSE README.md \"$out/share/doc/doom_share/\"\n  # Belt and braces: refuse to package anything but the v1.9 shareware WAD.\n  echo \"f0cefca49926d00903cf57551d901abe  $out/share/games/doom/doom1.wad\" | md5sum -c -\n",
+        "runtime-packages": [],
+        "sandbox": "pure",
+        "version": "1.9",
+        "description": "DOOM shareware v1.9 by id Software (Episode 1: Knee-Deep in the Dead) plus a launcher for any Doom engine"
+      }
     }
   },
   "packages": [
     {
-      "attr_path": "crispy-doom",
+      "attr_path": "coreutils",
       "broken": false,
-      "derivation": "/nix/store/03bxpksp87jqxhi6d1jz2sz1b99prpvz-crispy-doom-7.1.drv",
-      "description": "Limit-removing enhanced-resolution Doom source port based on Chocolate Doom",
-      "install_id": "crispy-doom",
-      "license": "GPL-2.0-or-later",
+      "derivation": "/nix/store/6qj2zcxknmx7m89xp3var5rvh8c4bpx1-coreutils-9.11.drv",
+      "description": "GNU Core Utilities",
+      "install_id": "coreutils",
+      "license": "GPL-3.0-or-later",
       "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
-      "name": "crispy-doom-7.1",
-      "pname": "crispy-doom",
+      "name": "coreutils-9.11",
+      "pname": "coreutils",
       "rev": "d407951447dcd00442e97087bf374aad70c04cea",
       "rev_count": 1027867,
       "rev_date": "2026-07-05T04:06:12Z",
-      "scrape_date": "2026-07-06T03:12:55.320946Z",
+      "scrape_date": "2026-07-06T03:12:55.258386Z",
       "stabilities": [
         "staging",
         "unstable"
       ],
       "unfree": false,
-      "version": "7.1",
+      "version": "9.11",
       "outputs_to_install": [
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/m8bwd8flrm9p48lx7sqws8whnpmdqjf0-crispy-doom-7.1"
+        "info": "/nix/store/lv9640g9czilp4h0bzvaaa1pybkk7jjg-coreutils-9.11-info",
+        "out": "/nix/store/2pj9qd6qs9b5rk4xzbsj9l2nmm07cdaf-coreutils-9.11"
       },
       "system": "aarch64-darwin",
       "group": "toplevel",
       "priority": 5
     },
     {
-      "attr_path": "crispy-doom",
+      "attr_path": "coreutils",
       "broken": false,
-      "derivation": "/nix/store/zrigbi2smh3rqg9gkssrq3shh51ggvc6-crispy-doom-7.1.drv",
-      "description": "Limit-removing enhanced-resolution Doom source port based on Chocolate Doom",
-      "install_id": "crispy-doom",
-      "license": "GPL-2.0-or-later",
+      "derivation": "/nix/store/y7adjxihg95hrq74jjqxarkr3h2r7vz5-coreutils-9.11.drv",
+      "description": "GNU Core Utilities",
+      "install_id": "coreutils",
+      "license": "GPL-3.0-or-later",
       "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
-      "name": "crispy-doom-7.1",
-      "pname": "crispy-doom",
+      "name": "coreutils-9.11",
+      "pname": "coreutils",
       "rev": "d407951447dcd00442e97087bf374aad70c04cea",
       "rev_count": 1027867,
       "rev_date": "2026-07-05T04:06:12Z",
-      "scrape_date": "2026-07-06T03:41:21.966679Z",
+      "scrape_date": "2026-07-06T03:41:21.925224Z",
       "stabilities": [
         "staging",
         "unstable"
       ],
       "unfree": false,
-      "version": "7.1",
+      "version": "9.11",
       "outputs_to_install": [
+        "out",
+        "out",
+        "out",
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/55vrh6izfv432hjbsyjamypdhi7m9xpg-crispy-doom-7.1"
+        "debug": "/nix/store/c9i9h5zarcllbifym9n5iqkz03pvdcbp-coreutils-9.11-debug",
+        "info": "/nix/store/jbj9dg06bmdr8jpg8i2r2kpczh81h7vk-coreutils-9.11-info",
+        "out": "/nix/store/xapdnwj438nw0drpnxpbr1yds0yqhngi-coreutils-9.11"
       },
       "system": "aarch64-linux",
       "group": "toplevel",
       "priority": 5
     },
     {
-      "attr_path": "crispy-doom",
+      "attr_path": "coreutils",
       "broken": false,
-      "derivation": "/nix/store/jk62ky0bzdxid5mk5kzb34c2ajf0vbnv-crispy-doom-7.1.drv",
-      "description": "Limit-removing enhanced-resolution Doom source port based on Chocolate Doom",
-      "install_id": "crispy-doom",
-      "license": "GPL-2.0-or-later",
+      "derivation": "/nix/store/a0dp57smwj4jgd90ak4kz3ciazrdxb0v-coreutils-9.11.drv",
+      "description": "GNU Core Utilities",
+      "install_id": "coreutils",
+      "license": "GPL-3.0-or-later",
       "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
-      "name": "crispy-doom-7.1",
-      "pname": "crispy-doom",
+      "name": "coreutils-9.11",
+      "pname": "coreutils",
       "rev": "d407951447dcd00442e97087bf374aad70c04cea",
       "rev_count": 1027867,
       "rev_date": "2026-07-05T04:06:12Z",
-      "scrape_date": "2026-07-06T04:09:00.670349Z",
+      "scrape_date": "2026-07-06T04:09:00.643516Z",
       "stabilities": [
         "staging",
         "unstable"
       ],
       "unfree": false,
-      "version": "7.1",
+      "version": "9.11",
       "outputs_to_install": [
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/r5flgb3q973rg8ywbbz6k8qcr7jxcccz-crispy-doom-7.1"
+        "info": "/nix/store/8jc9262zif5m5gh6h5n1kbs5yrv594xn-coreutils-9.11-info",
+        "out": "/nix/store/rg42k0h3hj1mwldhywll29n7m0kcpxq2-coreutils-9.11"
       },
       "system": "x86_64-darwin",
       "group": "toplevel",
       "priority": 5
     },
     {
-      "attr_path": "crispy-doom",
+      "attr_path": "coreutils",
       "broken": false,
-      "derivation": "/nix/store/izx2bsjlf2vx4wn3q9xbg2qkwz3dz7rx-crispy-doom-7.1.drv",
-      "description": "Limit-removing enhanced-resolution Doom source port based on Chocolate Doom",
-      "install_id": "crispy-doom",
-      "license": "GPL-2.0-or-later",
+      "derivation": "/nix/store/yzawmmja3azkam2gyf3b0z5a8aafja9m-coreutils-9.11.drv",
+      "description": "GNU Core Utilities",
+      "install_id": "coreutils",
+      "license": "GPL-3.0-or-later",
       "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
-      "name": "crispy-doom-7.1",
-      "pname": "crispy-doom",
+      "name": "coreutils-9.11",
+      "pname": "coreutils",
       "rev": "d407951447dcd00442e97087bf374aad70c04cea",
       "rev_count": 1027867,
       "rev_date": "2026-07-05T04:06:12Z",
-      "scrape_date": "2026-07-06T04:40:24.623815Z",
+      "scrape_date": "2026-07-06T04:40:24.577683Z",
       "stabilities": [
         "staging",
         "unstable"
       ],
       "unfree": false,
-      "version": "7.1",
+      "version": "9.11",
+      "outputs_to_install": [
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/wifadx5v4ps5nvf23cr22lswn3q70s6f-coreutils-9.11-debug",
+        "info": "/nix/store/zs5bzwnkhgzka1ccvzkhx0xzf1mlah2j-coreutils-9.11-info",
+        "out": "/nix/store/sr26flm2nkfa12dkrwj2630kqsfakky4-coreutils-9.11"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gnused",
+      "broken": false,
+      "derivation": "/nix/store/vw2jx98y1r0ib34a1rl2rkvcvyr93ah0-gnused-4.9.drv",
+      "description": "GNU sed, a batch stream editor",
+      "install_id": "gnused",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
+      "name": "gnused-4.9",
+      "pname": "gnused",
+      "rev": "d407951447dcd00442e97087bf374aad70c04cea",
+      "rev_count": 1027867,
+      "rev_date": "2026-07-05T04:06:12Z",
+      "scrape_date": "2026-07-06T03:12:56.225290Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "4.9",
+      "outputs_to_install": [
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/iqs6jn5lzy4ywkqy7amy2mnqiw3bb66c-gnused-4.9-info",
+        "out": "/nix/store/a023z0acai6hdcailn7199ggxy9pvr8g-gnused-4.9"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gnused",
+      "broken": false,
+      "derivation": "/nix/store/cx81wb0jx77n5nnj034b3xlbhczffxqq-gnused-4.9.drv",
+      "description": "GNU sed, a batch stream editor",
+      "install_id": "gnused",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
+      "name": "gnused-4.9",
+      "pname": "gnused",
+      "rev": "d407951447dcd00442e97087bf374aad70c04cea",
+      "rev_count": 1027867,
+      "rev_date": "2026-07-05T04:06:12Z",
+      "scrape_date": "2026-07-06T03:41:23.891055Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "4.9",
+      "outputs_to_install": [
+        "out",
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/nfvfhslvvhh8m03j8kwydx27bfaiqm8q-gnused-4.9-info",
+        "out": "/nix/store/38q3ccxjgfxc7xs70gn6ym06ha7c5qvl-gnused-4.9"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gnused",
+      "broken": false,
+      "derivation": "/nix/store/3qbiizi1661sr0k5xsban6ml67chsw0k-gnused-4.9.drv",
+      "description": "GNU sed, a batch stream editor",
+      "install_id": "gnused",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
+      "name": "gnused-4.9",
+      "pname": "gnused",
+      "rev": "d407951447dcd00442e97087bf374aad70c04cea",
+      "rev_count": 1027867,
+      "rev_date": "2026-07-05T04:06:12Z",
+      "scrape_date": "2026-07-06T04:09:01.836568Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "4.9",
       "outputs_to_install": [
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/0gkh7n3w68vd0hp70brazd2zjya611rg-crispy-doom-7.1"
+        "info": "/nix/store/j403q9gj9k520ps7pgzyapv779g1w4r9-gnused-4.9-info",
+        "out": "/nix/store/9jnz7q1jhccxclzrghm539312f90b1la-gnused-4.9"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gnused",
+      "broken": false,
+      "derivation": "/nix/store/mgv3vazn4vhk6drkzs642ly6lp26nxnq-gnused-4.9.drv",
+      "description": "GNU sed, a batch stream editor",
+      "install_id": "gnused",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
+      "name": "gnused-4.9",
+      "pname": "gnused",
+      "rev": "d407951447dcd00442e97087bf374aad70c04cea",
+      "rev_count": 1027867,
+      "rev_date": "2026-07-05T04:06:12Z",
+      "scrape_date": "2026-07-06T04:40:26.712581Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "4.9",
+      "outputs_to_install": [
+        "out",
+        "out",
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/gxapzvp834wn041yqv35zwzasamvqziv-gnused-4.9-info",
+        "out": "/nix/store/0hamsiy8hsyfw1hmizbc3bf93ad7fa1v-gnused-4.9"
       },
       "system": "x86_64-linux",
       "group": "toplevel",

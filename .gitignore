@@ -4,12 +4,13 @@
 .flox/log/
 .flox/lib/
 
-# IWADs: only id's freely redistributable shareware doom1.wad is committed.
-# Commercial DOOM.WAD / DOOM2.WAD must never be. See wads/README.md.
+# flox build output symlinks
+result
+result-*
+
+# Only id's freely redistributable shareware doom1.wad is tracked.
+# Commercial DOOM.WAD / DOOM2.WAD must never be committed.
 wads/*.wad
 wads/*.WAD
 wads/*.zip
 !wads/doom1.wad
-
-# Doom writes config and savegames here when HOME is redirected in kiosk mode
-.doom-home/
