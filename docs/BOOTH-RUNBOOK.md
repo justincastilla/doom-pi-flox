@@ -4,7 +4,7 @@
 
 - [ ] Pi boots into DOOM on its own (kiosk unit enabled). Reboot it twice to be sure.
 - [ ] `./ci/smoke-test` passes on the laptop; screenshot the output for the booth screen.
-- [ ] Laptop has `~/doom` with `crispy-doom` and `doom_share` installed and `flox activate -- doom_share -window` works. Apple Silicon uses the `aarch64-darwin` build of the same package.
+- [ ] Laptop has `~/doom` with an engine and `doom_share` installed and `flox activate -- doom_share -window` works. Apple Silicon uses the `aarch64-darwin` build of the same package.
 - [ ] `flox publish` done and `flox search doom_share` shows it.
 - [ ] Pack: Pi, PSU, micro-HDMI cable, USB keyboard, USB mouse, a gamepad, Ethernet cable, spare flashed SD card.
 - [ ] Both machines have the packages cached from the hotel. Don't install at the booth.
@@ -12,7 +12,7 @@
 ## The 60-second demo
 
 1. Point at the Pi playing DOOM. "That's a Raspberry Pi. Nothing on it was apt-installed except curl and Flox."
-2. On the laptop: `flox install crispy-doom justincastilla/doom_share` into a fresh directory. Two packages. One is a Doom engine from the catalog, the other is the 1993 shareware WAD, packaged with Flox from this repo.
+2. On the laptop: `flox install <engine> justincastilla/doom_share` into a fresh directory. Two packages. One is whichever Doom engine you like from the catalog, the other is the 1993 shareware WAD, packaged with Flox from this repo.
 3. `doom_share -window`. "Same package on the Pi, on this Mac, and in CI on an arm64 runner."
 4. If they're technical: `cat .flox/env/manifest.toml` in the repo. A `[build]` section that copies one file and verifies its checksum, and that's the whole package. `flox publish` re-clones and rebuilds it from git, so what's in the catalog is what's in the commit.
 5. Hand them the keyboard.

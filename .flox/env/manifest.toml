@@ -4,7 +4,7 @@
 ##   flox publish              # -> <your-catalog>/doom_share on FloxHub
 ##
 ## Consumers pair it with any Doom engine from the catalog:
-##   flox install crispy-doom <catalog>/doom_share
+##   flox install <engine> <catalog>/doom_share
 ##   doom_share
 ##
 ## Manifest reference: https://flox.dev/docs/reference/command-reference/manifest.toml/

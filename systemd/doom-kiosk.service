@@ -2,7 +2,7 @@
 #
 # Assumes a consumer environment at /home/pi/doom created with:
 #   mkdir ~/doom && cd ~/doom && flox init
-#   flox install crispy-doom justincastilla/doom_share
+#   flox install <engine> justincastilla/doom_share
 # Adjust User=, Group=, HOME and the two paths if your user isn't "pi".
 #
 #   sudo cp systemd/doom-kiosk.service /etc/systemd/system/

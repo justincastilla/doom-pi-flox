@@ -4,11 +4,12 @@ id Software's original 1993 shareware DOOM, packaged with Flox.
 
 `doom_share` is a Flox package containing the unmodified shareware IWAD,
 `doom1.wad` v1.9 (Episode 1, *Knee-Deep in the Dead*, the real E1M1), and a
-launcher that plays it with whichever Doom engine is on your PATH. It is
-data, not an engine: pair it with any port from the Flox catalog.
+launcher that plays it with whichever Doom engine you install next to it. It
+is data, not an engine, and it has no opinion about which engine you use.
 
 ```bash
-flox install crispy-doom justincastilla/doom_share
+flox search doom                                   # pick any engine
+flox install <engine> justincastilla/doom_share
 doom_share
 ```
 
@@ -26,16 +27,17 @@ past, hand him the keyboard. E1M1 is his map.
 doom_share                         # E1M1, whichever engine is found first
 doom_share -window                 # windowed, on a desktop
 doom_share -warp 1 3 -skill 4      # any engine flag passes straight through
-doom_share --engine gzdoom         # choose the engine (or: DOOMPORT=gzdoom)
+doom_share --engine <name>         # choose the engine (or: DOOMPORT=<name>)
 doom_share --kiosk                 # booth mode: restarts when a player quits
 doom_share --help
 ```
 
-Engine search order: `crispy-doom`, `chocolate-doom`, `woof-doom`,
-`nugget-doom`, `dsda-doom`, `prboom-plus`, `gzdoom`, `uzdoom`, `odamex`.
-All of them are in the Flox catalog and all build for aarch64-linux. Crispy
-Doom is the recommended one for a Pi: widescreen, higher resolution, still
-software-rendered and vanilla-compatible.
+Engine lookup, in order: `--engine` or `DOOMPORT`; an executable called
+`doom` on PATH; otherwise the first executable on PATH whose name contains
+"doom" (setup tools and dedicated servers are skipped). If your engine's
+command doesn't contain "doom", name it with `--engine`. Every Doom port in
+the Flox catalog builds for aarch64-linux; a software-rendered,
+vanilla-compatible one is the safe choice for a Pi.
 
 On a Linux console with no desktop (Raspberry Pi OS Lite, or a tty) the
 launcher selects SDL's KMS/DRM video driver, and on a Raspberry Pi it
@@ -50,7 +52,7 @@ PWADs, as id asked in 1995.
 | `.flox/env/manifest.toml` | The package definition: a `[build.doom_share]` that copies the WAD and the launcher into `$out`, pure-sandboxed, and verifies the WAD's checksum. |
 | `wads/doom1.wad` | id Software's shareware DOOM v1.9, extracted from the original `doom19s.zip` DEICE installer. MD5 `f0cefca49926d00903cf57551d901abe`. |
 | `bin/doom_share` | The launcher installed as `bin/doom_share` in the package. |
-| `ci/smoke-test` | Builds the package, checks the WAD, and plays the built-in demo through Crispy Doom in a throwaway environment. CI runs it on x86_64 and arm64. |
+| `ci/smoke-test` | Builds the package, checks the WAD, and plays the built-in demo in a throwaway environment with one engine from the catalog (the test's choice, overridable with `TEST_ENGINE`). CI runs it on x86_64 and arm64. |
 | `systemd/doom-kiosk.service` | Boot a Raspberry Pi straight into the game. |
 | `docs/` | [Raspberry Pi setup](docs/RASPBERRY-PI-SETUP.md), [booth runbook](docs/BOOTH-RUNBOOK.md), [feasibility study](docs/FEASIBILITY.md). |
 
@@ -84,7 +86,7 @@ The short version, on Raspberry Pi OS 64-bit:
 ```bash
 curl -fsSL https://get.flox.dev | sh
 mkdir ~/doom && cd ~/doom && flox init
-flox install crispy-doom justincastilla/doom_share
+flox install <engine> justincastilla/doom_share
 flox activate -- doom_share
 ```
 
@@ -93,6 +95,5 @@ flox activate -- doom_share
 The launcher, build definition and docs are MIT. `wads/doom1.wad` is the
 unmodified shareware version of DOOM, which id Software released for free
 distribution on the condition that it stays unmodified; it is not covered by
-the MIT license. Engines carry their own licenses (Crispy Doom is
-GPL-2.0-or-later). Commercial `DOOM.WAD` / `DOOM2.WAD` files must never be
-committed here or published.
+the MIT license. Engines carry their own licenses. Commercial `DOOM.WAD` /
+`DOOM2.WAD` files must never be committed here or published.

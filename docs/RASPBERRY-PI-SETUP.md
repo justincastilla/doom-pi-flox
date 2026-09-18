@@ -31,12 +31,13 @@ flox config --set disable_metrics true     # optional
 ## 3. Make the game environment
 
 You don't clone this repo on the Pi. You make an environment and install two
-packages from the catalog: an engine, and `doom_share`.
+packages from the catalog: a Doom engine of your choice, and `doom_share`.
 
 ```bash
 mkdir ~/doom && cd ~/doom
 flox init
-flox install crispy-doom justincastilla/doom_share
+flox search doom                                   # every port here builds for aarch64-linux
+flox install <engine> justincastilla/doom_share    # a software-rendered, vanilla-compatible port is the safe pick
 ```
 
 The first install downloads roughly 100 MB, so do it at the hotel, not at the
@@ -48,7 +49,7 @@ their owner), build it from this repo on the Pi instead:
 ```bash
 git clone https://github.com/justincastilla/doom-pi-flox ~/doom-pi-flox
 cd ~/doom-pi-flox && flox build          # -> result-doom_share/
-cd ~/doom && flox install crispy-doom
+cd ~/doom && flox install <engine>
 # then use ~/doom-pi-flox/result-doom_share/bin/doom_share in place of doom_share below
 ```
 
@@ -109,15 +110,15 @@ console (`sudo raspi-config` > System Options > Boot / Auto Login).
 
 ## 6. Optional extras
 
-**Gamepad.** `flox activate -- crispy-doom-setup`, enable the joystick and
-bind buttons. Under the kiosk unit the config lives in
-`~/.local/state/doom_share-kiosk/.local/share/crispy-doom/`.
+**Gamepad.** Most ports ship a `<engine>-setup` tool; run it from the
+activated environment, enable the joystick and bind buttons. Under the kiosk
+unit the engine's config lives under `~/.local/state/doom_share-kiosk/`.
 
 **Another engine.** `flox install gzdoom` then `doom_share --engine gzdoom`.
 GZDoom needs a working GPU path, which is the one thing untested on a Pi.
 
 **Your own DOOM.WAD.** Registered copies (Steam, GOG) work with any engine:
-put the file somewhere and run `crispy-doom -iwad /path/to/DOOM.WAD`. Never
+put the file somewhere and run `<engine> -iwad /path/to/DOOM.WAD`. Never
 commit or publish it.
 
 ## Troubleshooting
@@ -126,7 +127,7 @@ commit or publish it.
 | --- | --- |
 | `uname -m` says `armv7l` | 32-bit OS. Re-flash with the 64-bit image. |
 | `flox install` says no package for this system | Same cause. `aarch64-linux` is required. |
-| `doom_share: no Doom engine found on PATH` | Install one in the same environment: `flox install crispy-doom`. |
+| `doom_share: no Doom engine found on PATH` | Install one in the same environment (`flox search doom`), or point at it with `--engine NAME` if its command doesn't contain "doom". |
 | Black screen, then back to the shell | Read the last lines: an EGL/GBM error means the GPU path failed. Make sure `DOOM_SHARE_RENDER=gpu` isn't set, and that your user is in the `video` and `render` groups. |
 | `Could not initialize SDL video: kmsdrm not available` | A compositor already owns the display. Run from a real tty (Ctrl-Alt-F2), or on the desktop unset `SDL_VIDEODRIVER`. |
 | No sound on the console | `SDL_AUDIODRIVER=alsa`, and check `aplay -l` shows the HDMI device. |

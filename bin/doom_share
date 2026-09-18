@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
 # doom_share: play id Software's 1993 shareware DOOM (Episode 1, "Knee-Deep in
-# the Dead") with whatever Doom engine is on PATH.
+# the Dead") with a Doom engine of your choice.
 #
-#   flox install crispy-doom <catalog>/doom_share
+#   flox install <engine> <catalog>/doom_share    # any Doom engine from the catalog
 #   doom_share                       # E1M1
 #   doom_share -warp 1 3 -skill 4    # any engine flag passes through
-#   doom_share --engine gzdoom       # pick the engine explicitly (or set DOOMPORT)
+#   doom_share --engine <name>       # pick the engine explicitly (or set DOOMPORT)
 #   doom_share --kiosk               # booth mode: restart when a player quits
 #
 # This package is data: the WAD lives in share/games/doom next to this
-# script. The engine is whichever of these is installed, first match wins:
-ENGINES="crispy-doom chocolate-doom woof-doom nugget-doom dsda-doom prboom-plus gzdoom uzdoom odamex"
+# script. It has no engine of its own and names none. Engine lookup order:
+#   1. --engine NAME, or DOOMPORT=NAME
+#   2. an executable called "doom" on PATH (Debian's alternatives name)
+#   3. the first executable on PATH whose name contains "doom"
 set -euo pipefail
 
 usage() { sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//'; }
@@ -49,17 +51,34 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-if [ -z "$engine" ]; then
-  for e in $ENGINES; do
-    if command -v "$e" >/dev/null 2>&1; then engine="$e"; break; fi
+find_engine() {
+  command -v doom 2>/dev/null && return 0
+  local dir f
+  IFS=: read -ra dirs <<< "$PATH"
+  for dir in "${dirs[@]}"; do
+    [ -d "$dir" ] || continue
+    for f in "$dir"/*doom*; do
+      if [ -f "$f" ] && [ -x "$f" ]; then
+        case "$(basename "$f")" in
+          doom_share|*-setup|*-server) continue ;;   # this script, engine setup tools, dedicated servers
+        esac
+        echo "$f"; return 0
+      fi
+    done
   done
+  return 1
+}
+
+if [ -z "$engine" ]; then
+  engine="$(find_engine || true)"
 fi
 if [ -z "$engine" ] || ! command -v "$engine" >/dev/null 2>&1; then
   cat >&2 <<MSG
 doom_share: no Doom engine found on PATH.
-Install one next to this package, for example:
-  flox install crispy-doom
-Engines searched: $ENGINES (override with --engine NAME or DOOMPORT=NAME)
+This package is only the game data. Install any Doom engine from the Flox
+catalog into the same environment (flox search doom), then run doom_share
+again. If the engine's command name does not contain "doom", point at it
+with --engine NAME or DOOMPORT=NAME.
 MSG
   exit 1
 fi

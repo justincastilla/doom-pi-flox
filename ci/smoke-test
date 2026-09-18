@@ -2,8 +2,10 @@
 # Build the doom_share package and prove a consumer can play it:
 #   1. flox build              -> result-doom_share
 #   2. the packaged WAD is byte-for-byte id's v1.9 shareware doom1.wad
-#   3. a throwaway environment with crispy-doom from the catalog runs the
-#      WAD's built-in demo through the package's launcher (headless SDL)
+#   3. a throwaway environment with one engine from the catalog runs the
+#      WAD's built-in demo through the package's launcher (headless SDL).
+#      The package names no engine; the test has to pick one to play with.
+#      Override with TEST_ENGINE=<name>.
 #
 # Run from anywhere: ./ci/smoke-test   (needs flox, git, and network on first run)
 set -euo pipefail
@@ -28,10 +30,11 @@ fi
 echo "doom1.wad md5 OK (id Software shareware v1.9)"
 echo
 
-echo "== 3. consumer environment: crispy-doom from the catalog + this package"
+TEST_ENGINE="${TEST_ENGINE:-crispy-doom}"
+echo "== 3. consumer environment: $TEST_ENGINE from the catalog + this package"
 consumer="$(mktemp -d)"
 flox init -d "$consumer" -n consumer --no-auto-setup >/dev/null
-flox install -d "$consumer" crispy-doom
+flox install -d "$consumer" "$TEST_ENGINE"
 export SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy HOME="$(mktemp -d)"
 # Doom reports timedemo results through I_Error() and exits non-zero on
 # success, as it has since 1993; the "timed N gametics" line is the verdict.
