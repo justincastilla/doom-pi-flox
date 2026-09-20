@@ -14,8 +14,7 @@
       "systems": [
         "aarch64-linux",
         "x86_64-linux",
-        "aarch64-darwin",
-        "x86_64-darwin"
+        "aarch64-darwin"
       ]
     },
     "build": {
@@ -101,37 +100,6 @@
         "out": "/nix/store/xapdnwj438nw0drpnxpbr1yds0yqhngi-coreutils-9.11"
       },
       "system": "aarch64-linux",
-      "group": "toplevel",
-      "priority": 5
-    },
-    {
-      "attr_path": "coreutils",
-      "broken": false,
-      "derivation": "/nix/store/a0dp57smwj4jgd90ak4kz3ciazrdxb0v-coreutils-9.11.drv",
-      "description": "GNU Core Utilities",
-      "install_id": "coreutils",
-      "license": "GPL-3.0-or-later",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
-      "name": "coreutils-9.11",
-      "pname": "coreutils",
-      "rev": "d407951447dcd00442e97087bf374aad70c04cea",
-      "rev_count": 1027867,
-      "rev_date": "2026-07-05T04:06:12Z",
-      "scrape_date": "2026-07-06T04:09:00.643516Z",
-      "stabilities": [
-        "staging",
-        "unstable"
-      ],
-      "unfree": false,
-      "version": "9.11",
-      "outputs_to_install": [
-        "out"
-      ],
-      "outputs": {
-        "info": "/nix/store/8jc9262zif5m5gh6h5n1kbs5yrv594xn-coreutils-9.11-info",
-        "out": "/nix/store/rg42k0h3hj1mwldhywll29n7m0kcpxq2-coreutils-9.11"
-      },
-      "system": "x86_64-darwin",
       "group": "toplevel",
       "priority": 5
     },
@@ -237,37 +205,6 @@
         "out": "/nix/store/38q3ccxjgfxc7xs70gn6ym06ha7c5qvl-gnused-4.9"
       },
       "system": "aarch64-linux",
-      "group": "toplevel",
-      "priority": 5
-    },
-    {
-      "attr_path": "gnused",
-      "broken": false,
-      "derivation": "/nix/store/3qbiizi1661sr0k5xsban6ml67chsw0k-gnused-4.9.drv",
-      "description": "GNU sed, a batch stream editor",
-      "install_id": "gnused",
-      "license": "GPL-3.0-or-later",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
-      "name": "gnused-4.9",
-      "pname": "gnused",
-      "rev": "d407951447dcd00442e97087bf374aad70c04cea",
-      "rev_count": 1027867,
-      "rev_date": "2026-07-05T04:06:12Z",
-      "scrape_date": "2026-07-06T04:09:01.836568Z",
-      "stabilities": [
-        "staging",
-        "unstable"
-      ],
-      "unfree": false,
-      "version": "4.9",
-      "outputs_to_install": [
-        "out"
-      ],
-      "outputs": {
-        "info": "/nix/store/j403q9gj9k520ps7pgzyapv779g1w4r9-gnused-4.9-info",
-        "out": "/nix/store/9jnz7q1jhccxclzrghm539312f90b1la-gnused-4.9"
-      },
-      "system": "x86_64-darwin",
       "group": "toplevel",
       "priority": 5
     },

@@ -14,7 +14,7 @@ doom_share
 ```
 
 That works on a Raspberry Pi (aarch64-linux), a Linux laptop, an Apple
-Silicon or Intel Mac, and in CI, from the same package. The WAD is in this
+Silicon Mac, and in CI, from the same package. The WAD is in this
 repo because id shipped it that way: the 1995 installer's banner reads
 "SHAREWARE VERSION, PLEASE DISTRIBUTE!!!".
 
