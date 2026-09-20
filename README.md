@@ -22,9 +22,10 @@ doom_share
 ```
 
 Both work on a Raspberry Pi (aarch64-linux), a Linux laptop, an Apple
-Silicon Mac, and in CI, from the same repo. The WAD is in this
-repo because id shipped it that way: the 1995 installer's banner reads
-"SHAREWARE VERSION, PLEASE DISTRIBUTE!!!".
+Silicon Mac, and in CI, from the same repo. No WAD is committed here: the
+build fetches `doom19s.zip` from the idgames archive and unpacks id's 1995
+installer. That installer's banner reads "SHAREWARE VERSION, PLEASE
+DISTRIBUTE!!!".
 
 The two packages provide the same files under `share/`, so install one or the
 other into an environment rather than both.
@@ -75,13 +76,41 @@ PWADs, as id asked in 1995.
 
 | Path | What it is |
 | --- | --- |
-| `.flox/env/manifest.toml` | Both package definitions. `[build.doom_share]` copies the WAD and the launcher into `$out`, pure-sandboxed, and verifies the WAD's checksum; `[build.doom]` takes that build's `share/` through `${doom_share}` and adds Crispy Doom as a runtime package. |
-| `wads/doom1.wad` | id Software's shareware DOOM v1.9, extracted from the original `doom19s.zip` DEICE installer. MD5 `f0cefca49926d00903cf57551d901abe`. |
+| `.flox/env/manifest.toml` | All three build stages. `[build.wad]` fetches and unpacks the IWAD; `[build.doom_share]` takes it through `${wad}` and adds the engine-agnostic launcher; `[build.doom]` takes `${doom_share}`'s `share/` and adds Crispy Doom as a runtime package. |
 | `bin/doom_share` | The launcher installed as `bin/doom_share` in the `doom_share` package. |
 | `bin/doom` | The launcher installed as `bin/doom` in the `doom` package. It needs no engine discovery, so it is the shorter of the two. |
 | `ci/smoke-test` | Builds both packages, checks the WAD, plays the built-in demo in a throwaway environment with one engine from the catalog (the test's choice, overridable with `TEST_ENGINE`), and plays it again through `doom` with nothing on PATH. CI runs it on x86_64 and arm64. |
 | `systemd/doom-kiosk.service` | Boot a Raspberry Pi straight into the game. |
 | `docs/` | [Raspberry Pi setup](docs/RASPBERRY-PI-SETUP.md), [booth runbook](docs/BOOTH-RUNBOOK.md), [feasibility study](docs/FEASIBILITY.md). |
+
+## How the WAD gets in
+
+The IWAD is vendored: a stage of its own fetches it, and the builds that
+package it stay pure.
+
+```toml
+[build.wad]
+command = '''            # default sandbox "off", so this one has network
+  curl -fsSL -o doom19s.zip .../doom19s.zip
+  ...
+'''
+
+[build.doom_share]
+sandbox = "pure"
+command = '''
+  cp ${wad}/share/games/doom/doom1.wad "$out/share/games/doom/doom1.wad"
+  ...
+'''
+```
+
+`${wad}` expands to that stage's `$out` and makes it run first.
+
+The unpacking is the interesting part. `doom19s.zip` is id's DEICE installer
+for DOS: inside it, `DOOMS_19.1` and `DOOMS_19.2` are the two disks of one
+split zip, the first carrying a self-extractor stub. Concatenating them
+produces an archive `unzip` reads `DOOM1.WAD` out of. `[build.doom_share]`
+then checks it against `f0cefca49926d00903cf57551d901abe`, id's shareware
+v1.9, and refuses to package anything else.
 
 ## Building and publishing
 
@@ -131,8 +160,9 @@ flox activate -- doom_share
 
 ## Licenses
 
-The launcher, build definition and docs are MIT. `wads/doom1.wad` is the
-unmodified shareware version of DOOM, which id Software released for free
-distribution on the condition that it stays unmodified; it is not covered by
-the MIT license. Engines carry their own licenses. Commercial `DOOM.WAD` /
-`DOOM2.WAD` files must never be committed here or published.
+The launchers, build definition and docs are MIT. `doom1.wad`, which the
+build fetches, is the unmodified shareware version of DOOM, which id Software
+released for free distribution on the condition that it stays unmodified; it
+is not covered by the MIT license. Engines carry their own licenses.
+Commercial `DOOM.WAD` / `DOOM2.WAD` files must never be committed here or
+published.

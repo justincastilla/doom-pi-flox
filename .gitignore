@@ -8,9 +8,8 @@
 result
 result-*
 
-# Only id's freely redistributable shareware doom1.wad is tracked.
-# Commercial DOOM.WAD / DOOM2.WAD must never be committed.
-wads/*.wad
-wads/*.WAD
-wads/*.zip
-!wads/doom1.wad
+# Game data is fetched at build time, never committed. Commercial
+# DOOM.WAD / DOOM2.WAD must never be committed here or published.
+*.wad
+*.WAD
+*.zip
