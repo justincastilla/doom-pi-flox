@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+# doom: play id Software's 1993 shareware DOOM (Episode 1, "Knee-Deep in the
+# Dead"). The game data and a Doom engine travel together in this package.
+# For the data on its own, to pair with an engine of your choosing, use the
+# doom_share package instead.
+#
+# The engine is the only thing this script needs beyond bash: no sed, grep,
+# tr or uname, so it runs on whatever PATH `flox run` hands it.
+set -euo pipefail
+
+usage() {
+  printf '%s\n' \
+    "doom: id Software's 1993 shareware DOOM, ready to play." \
+    "" \
+    "  flox run -p flox-labs/doom -- doom   E1M1, nothing to install" \
+    "  doom -window                     windowed, on a desktop" \
+    "  doom -warp 1 3 -skill 4          any engine flag passes through" \
+    "  doom --engine <name>             use another engine (or set DOOMPORT)" \
+    "  doom --kiosk                     booth mode: restart when a player quits" \
+    "  doom --help"
+}
+
+# --- locate the WAD --------------------------------------------------------
+# Flox wraps $out/bin and exports the package's own store path. Outside that
+# wrapper (running the built script directly) resolve relative to this file.
+pkg="${FLOX_MANIFEST_BUILD_OUT:-$(cd "$(dirname "$0")/.." && pwd)}"
+wad_dir="$pkg/share/games/doom"
+if [ ! -f "$wad_dir/doom1.wad" ]; then
+  echo "doom: cannot find doom1.wad (looked in '$wad_dir')" >&2
+  exit 1
+fi
+export DOOMWADPATH="$wad_dir${DOOMWADPATH:+:$DOOMWADPATH}"
+
+# --- options ---------------------------------------------------------------
+kiosk=0
+engine="${DOOMPORT:-crispy-doom}"
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --kiosk)  kiosk=1; shift ;;
+    --engine) engine="$2"; shift 2 ;;
+    --engine=*) engine="${1#--engine=}"; shift ;;
+    --help|-h) usage; exit 0 ;;
+    --) shift; break ;;
+    *) break ;;
+  esac
+done
+
+if ! command -v "$engine" >/dev/null 2>&1; then
+  echo "doom: engine '$engine' is not on PATH" >&2
+  exit 1
+fi
+
+# --- display defaults for a Linux console / Raspberry Pi -------------------
+# Linux with no Wayland/X11 session (Raspberry Pi OS Lite, a tty): render
+# straight through the kernel's DRM/KMS. SDL picks correctly everywhere else.
+if [ "${OSTYPE:-}" != "${OSTYPE#linux}" ] && [ -z "${SDL_VIDEODRIVER:-}" ] \
+   && [ -z "${WAYLAND_DISPLAY:-}" ] && [ -z "${DISPLAY:-}" ]; then
+  export SDL_VIDEODRIVER=kmsdrm
+fi
+# On a Raspberry Pi default to SDL's software scaler; Doom renders in
+# software anyway. DOOM_SHARE_RENDER=gpu tries the OpenGL ES path instead.
+if [ -z "${SDL_RENDER_DRIVER:-}" ] && [ "${DOOM_SHARE_RENDER:-auto}" != "gpu" ] \
+   && [ -r /proc/device-tree/model ]; then
+  read -r -d '' model < /proc/device-tree/model || true
+  if [ "${model,,}" != "${model,,#*raspberry pi}" ]; then
+    export SDL_RENDER_DRIVER=software
+  fi
+fi
+
+# --- run -------------------------------------------------------------------
+if [ "$kiosk" -eq 0 ]; then
+  exec "$engine" -iwad doom1.wad "$@"
+fi
+
+# Kiosk: keep the game up. Config and saves go to a scratch HOME so a reset
+# for the next player is `rm -rf ${DOOM_SHARE_HOME}`.
+: "${DOOM_SHARE_HOME:=${XDG_STATE_HOME:-$HOME/.local/state}/doom_share-kiosk}"
+: "${DOOM_SHARE_KIOSK_DELAY:=2}"
+mkdir -p "$DOOM_SHARE_HOME"
+export HOME="$DOOM_SHARE_HOME" XDG_CONFIG_HOME="$DOOM_SHARE_HOME/.config" XDG_DATA_HOME="$DOOM_SHARE_HOME/.local/share"
+trap 'echo "doom: kiosk stopping"; exit 0' INT TERM
+while :; do
+  echo "doom: launching $engine (kiosk)"
+  "$engine" -iwad doom1.wad -fullscreen "$@" || true
+  echo "doom: engine exited, restarting in ${DOOM_SHARE_KIOSK_DELAY}s"
+  sleep "$DOOM_SHARE_KIOSK_DELAY"
+done

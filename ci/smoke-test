@@ -6,8 +6,10 @@
 #      WAD's built-in demo through the package's launcher (headless SDL).
 #      The package names no engine; the test has to pick one to play with.
 #      Override with TEST_ENGINE=<name>.
+#   4. the doom package plays the same demo on an empty environment, with
+#      no engine installed and nothing on PATH, the way `flox run` gets it.
 #
-# Run from anywhere: ./ci/smoke-test   (needs flox, git, and network on first run)
+# Run from anywhere: ./ci/smoke-test   (needs flox, git and network)
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -46,4 +48,16 @@ else
   printf '%s\n' "$log" | tail -30; echo "FAIL: launcher did not complete the demo" >&2; exit 1
 fi
 echo
-echo "smoke-test: doom_share builds, contains the right WAD, and plays."
+echo "== 4. the doom package on its own, no environment and no PATH"
+flox build doom
+doom_out="$PWD/result-doom"
+log=$(env -i PATH=/usr/bin:/bin HOME="$(mktemp -d)" SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy \
+  "$doom_out/bin/doom" -nosound -nomusic -window -timedemo demo1 2>&1 || true)
+if result=$(printf '%s\n' "$log" | grep -m1 -oE 'timed [0-9]+ gametics in [0-9]+ realtics \([0-9.]+ fps\)'); then
+  echo "demo OK ($result)"
+else
+  printf '%s\n' "$log" | tail -30; echo "FAIL: doom did not complete the demo standalone" >&2; exit 1
+fi
+echo
+echo "smoke-test: doom_share builds, contains the right WAD, and plays;"
+echo "            doom plays it with no engine installed."

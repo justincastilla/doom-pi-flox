@@ -6,25 +6,48 @@
       "coreutils": {
         "pkg-path": "coreutils"
       },
+      "crispy-doom": {
+        "pkg-path": "crispy-doom"
+      },
+      "curl": {
+        "pkg-path": "curl"
+      },
       "gnused": {
         "pkg-path": "gnused"
+      },
+      "unzip": {
+        "pkg-path": "unzip"
       }
     },
     "options": {
       "systems": [
         "aarch64-linux",
         "x86_64-linux",
-        "aarch64-darwin",
-        "x86_64-darwin"
+        "aarch64-darwin"
       ]
     },
     "build": {
+      "doom": {
+        "command": "  set -euo pipefail\n  # ${doom_share} is that build's $out: the WAD and the docs are assembled\n  # once. Only share/ is taken; bin/ there is that package's own wrapped\n  # launcher. Store paths come back read-only.\n  mkdir -p \"$out/bin\" \"$out/share\"\n  cp -r ${doom_share}/share/. \"$out/share/\"\n  chmod -R u+w \"$out/share\"\n  mv \"$out/share/doc/doom_share\" \"$out/share/doc/doom\"\n  cp bin/doom \"$out/bin/doom\"\n  chmod 0755 \"$out/bin/doom\"\n",
+        "runtime-packages": [
+          "crispy-doom"
+        ],
+        "sandbox": "pure",
+        "version": "1.9",
+        "description": "DOOM shareware v1.9 by id Software (Episode 1: Knee-Deep in the Dead), ready to play with Crispy Doom"
+      },
       "doom_share": {
-        "command": "  set -euo pipefail\n  mkdir -p \"$out/bin\" \"$out/share/games/doom\" \"$out/share/doc/doom_share\"\n  cp wads/doom1.wad \"$out/share/games/doom/doom1.wad\"\n  cp bin/doom_share \"$out/bin/doom_share\"\n  chmod 0755 \"$out/bin/doom_share\"\n  cp LICENSE README.md \"$out/share/doc/doom_share/\"\n  # Belt and braces: refuse to package anything but the v1.9 shareware WAD.\n  echo \"f0cefca49926d00903cf57551d901abe  $out/share/games/doom/doom1.wad\" | md5sum -c -\n",
+        "command": "  set -euo pipefail\n  mkdir -p \"$out/bin\" \"$out/share/games/doom\" \"$out/share/doc/doom_share\"\n  cp ${wad}/share/games/doom/doom1.wad \"$out/share/games/doom/doom1.wad\"\n  chmod 0644 \"$out/share/games/doom/doom1.wad\"\n  cp bin/doom_share \"$out/bin/doom_share\"\n  chmod 0755 \"$out/bin/doom_share\"\n  cp LICENSE README.md \"$out/share/doc/doom_share/\"\n  # Belt and braces: refuse to package anything but the v1.9 shareware WAD.\n  echo \"f0cefca49926d00903cf57551d901abe  $out/share/games/doom/doom1.wad\" | md5sum -c -\n",
         "runtime-packages": [],
         "sandbox": "pure",
         "version": "1.9",
         "description": "DOOM shareware v1.9 by id Software (Episode 1: Knee-Deep in the Dead) plus a launcher for any Doom engine"
+      },
+      "wad": {
+        "command": "  # An unsandboxed build runs in the project directory; unpack somewhere else\n  # so nothing lands in the working tree.\n  cd \"$(mktemp -d)\"\n  curl -fsSL -o doom19s.zip https://www.gamers.org/pub/idgames/idstuff/doom/doom19s.zip\n  # doom19s.zip is id's DEICE installer for DOS. DOOMS_19.1 and DOOMS_19.2\n  # are the two disks of one split zip, the first carrying a self-extractor\n  # stub, so they concatenate into an archive unzip can read.\n  unzip -q doom19s.zip DOOMS_19.1 DOOMS_19.2\n  cat DOOMS_19.1 DOOMS_19.2 > doom19s.bin\n  mkdir -p $out/share/games/doom\n  unzip -q -j doom19s.bin DOOM1.WAD -d $out/share/games/doom\n  mv $out/share/games/doom/DOOM1.WAD $out/share/games/doom/doom1.wad\n",
+        "sandbox": "off",
+        "version": "1.9",
+        "description": "id Software's shareware DOOM v1.9 IWAD, unpacked from the original 1995 installer"
       }
     }
   },
@@ -107,37 +130,6 @@
     {
       "attr_path": "coreutils",
       "broken": false,
-      "derivation": "/nix/store/a0dp57smwj4jgd90ak4kz3ciazrdxb0v-coreutils-9.11.drv",
-      "description": "GNU Core Utilities",
-      "install_id": "coreutils",
-      "license": "GPL-3.0-or-later",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
-      "name": "coreutils-9.11",
-      "pname": "coreutils",
-      "rev": "d407951447dcd00442e97087bf374aad70c04cea",
-      "rev_count": 1027867,
-      "rev_date": "2026-07-05T04:06:12Z",
-      "scrape_date": "2026-07-06T04:09:00.643516Z",
-      "stabilities": [
-        "staging",
-        "unstable"
-      ],
-      "unfree": false,
-      "version": "9.11",
-      "outputs_to_install": [
-        "out"
-      ],
-      "outputs": {
-        "info": "/nix/store/8jc9262zif5m5gh6h5n1kbs5yrv594xn-coreutils-9.11-info",
-        "out": "/nix/store/rg42k0h3hj1mwldhywll29n7m0kcpxq2-coreutils-9.11"
-      },
-      "system": "x86_64-darwin",
-      "group": "toplevel",
-      "priority": 5
-    },
-    {
-      "attr_path": "coreutils",
-      "broken": false,
       "derivation": "/nix/store/yzawmmja3azkam2gyf3b0z5a8aafja9m-coreutils-9.11.drv",
       "description": "GNU Core Utilities",
       "install_id": "coreutils",
@@ -168,6 +160,207 @@
         "debug": "/nix/store/wifadx5v4ps5nvf23cr22lswn3q70s6f-coreutils-9.11-debug",
         "info": "/nix/store/zs5bzwnkhgzka1ccvzkhx0xzf1mlah2j-coreutils-9.11-info",
         "out": "/nix/store/sr26flm2nkfa12dkrwj2630kqsfakky4-coreutils-9.11"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "crispy-doom",
+      "broken": false,
+      "derivation": "/nix/store/03bxpksp87jqxhi6d1jz2sz1b99prpvz-crispy-doom-7.1.drv",
+      "description": "Limit-removing enhanced-resolution Doom source port based on Chocolate Doom",
+      "install_id": "crispy-doom",
+      "license": "GPL-2.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
+      "name": "crispy-doom-7.1",
+      "pname": "crispy-doom",
+      "rev": "d407951447dcd00442e97087bf374aad70c04cea",
+      "rev_count": 1027867,
+      "rev_date": "2026-07-05T04:06:12Z",
+      "scrape_date": "2026-07-06T03:12:55.320946Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "7.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/m8bwd8flrm9p48lx7sqws8whnpmdqjf0-crispy-doom-7.1"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "crispy-doom",
+      "broken": false,
+      "derivation": "/nix/store/zrigbi2smh3rqg9gkssrq3shh51ggvc6-crispy-doom-7.1.drv",
+      "description": "Limit-removing enhanced-resolution Doom source port based on Chocolate Doom",
+      "install_id": "crispy-doom",
+      "license": "GPL-2.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
+      "name": "crispy-doom-7.1",
+      "pname": "crispy-doom",
+      "rev": "d407951447dcd00442e97087bf374aad70c04cea",
+      "rev_count": 1027867,
+      "rev_date": "2026-07-05T04:06:12Z",
+      "scrape_date": "2026-07-06T03:41:21.966679Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "7.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/55vrh6izfv432hjbsyjamypdhi7m9xpg-crispy-doom-7.1"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "crispy-doom",
+      "broken": false,
+      "derivation": "/nix/store/izx2bsjlf2vx4wn3q9xbg2qkwz3dz7rx-crispy-doom-7.1.drv",
+      "description": "Limit-removing enhanced-resolution Doom source port based on Chocolate Doom",
+      "install_id": "crispy-doom",
+      "license": "GPL-2.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
+      "name": "crispy-doom-7.1",
+      "pname": "crispy-doom",
+      "rev": "d407951447dcd00442e97087bf374aad70c04cea",
+      "rev_count": 1027867,
+      "rev_date": "2026-07-05T04:06:12Z",
+      "scrape_date": "2026-07-06T04:40:24.623815Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "7.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/0gkh7n3w68vd0hp70brazd2zjya611rg-crispy-doom-7.1"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "curl",
+      "broken": false,
+      "derivation": "/nix/store/mg9lzmw7q6z65kr8kqsmpif5kpqskgjl-curl-8.20.0.drv",
+      "description": "Command line tool for transferring files with URL syntax",
+      "install_id": "curl",
+      "license": "curl",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
+      "name": "curl-8.20.0",
+      "pname": "curl",
+      "rev": "d407951447dcd00442e97087bf374aad70c04cea",
+      "rev_count": 1027867,
+      "rev_date": "2026-07-05T04:06:12Z",
+      "scrape_date": "2026-07-06T03:12:55.345357Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "8.20.0",
+      "outputs_to_install": [
+        "bin",
+        "man"
+      ],
+      "outputs": {
+        "bin": "/nix/store/0rrs2ydp7qynml2n29d7v90ra01hxhax-curl-8.20.0-bin",
+        "dev": "/nix/store/d5l4axk9j0bf2q2glxkz9qvqaqhblcay-curl-8.20.0-dev",
+        "devdoc": "/nix/store/3ssva04yd4z174k9f383vj0bisqzx0cz-curl-8.20.0-devdoc",
+        "man": "/nix/store/b915fx868q01rikwnvi99ljj9v3n5gix-curl-8.20.0-man",
+        "out": "/nix/store/w0hwcvhjihq11g77w0h5drqklxxj4ih2-curl-8.20.0"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "curl",
+      "broken": false,
+      "derivation": "/nix/store/8gcf1s8bi6kiywg1hl6i3v4nx3c7wrqp-curl-8.20.0.drv",
+      "description": "Command line tool for transferring files with URL syntax",
+      "install_id": "curl",
+      "license": "curl",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
+      "name": "curl-8.20.0",
+      "pname": "curl",
+      "rev": "d407951447dcd00442e97087bf374aad70c04cea",
+      "rev_count": 1027867,
+      "rev_date": "2026-07-05T04:06:12Z",
+      "scrape_date": "2026-07-06T03:41:22.022206Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "8.20.0",
+      "outputs_to_install": [
+        "bin",
+        "bin",
+        "man",
+        "man"
+      ],
+      "outputs": {
+        "bin": "/nix/store/8gdgwydsf6gia9j178nymxwm2bl0z3m3-curl-8.20.0-bin",
+        "debug": "/nix/store/rlffdmmrgy46gwvx8ap35gdiyd772vxj-curl-8.20.0-debug",
+        "dev": "/nix/store/01pp0l8ijps75bfk8x75iz2yg4n9klqh-curl-8.20.0-dev",
+        "devdoc": "/nix/store/yzn91bf7vwv8l5migzld5vphr87kfiwn-curl-8.20.0-devdoc",
+        "man": "/nix/store/fivfywp5nlas8zqmiqdar15s20v1llv7-curl-8.20.0-man",
+        "out": "/nix/store/v9dm55hnfslwma8x0vkrb12rc7xgw4br-curl-8.20.0"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "curl",
+      "broken": false,
+      "derivation": "/nix/store/zqkrwwbym85n95fd4xl1x2x2sg3iyihc-curl-8.20.0.drv",
+      "description": "Command line tool for transferring files with URL syntax",
+      "install_id": "curl",
+      "license": "curl",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
+      "name": "curl-8.20.0",
+      "pname": "curl",
+      "rev": "d407951447dcd00442e97087bf374aad70c04cea",
+      "rev_count": 1027867,
+      "rev_date": "2026-07-05T04:06:12Z",
+      "scrape_date": "2026-07-06T04:40:24.689079Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "8.20.0",
+      "outputs_to_install": [
+        "bin",
+        "bin",
+        "man",
+        "man"
+      ],
+      "outputs": {
+        "bin": "/nix/store/w36yf3psz1zhgabw03hlag8bw0rdfsav-curl-8.20.0-bin",
+        "debug": "/nix/store/6bd4xhi8pgwng74338wc82bqw5ncs7xs-curl-8.20.0-debug",
+        "dev": "/nix/store/mgf0n27lnygx9f2n4riyw34g2lqm9rhy-curl-8.20.0-dev",
+        "devdoc": "/nix/store/5dxy29mjl0wjakfignhm1q2h04qnl5j1-curl-8.20.0-devdoc",
+        "man": "/nix/store/df7hisry2sni9b7dx84df75m3mr15idz-curl-8.20.0-man",
+        "out": "/nix/store/5ji5924yd02lmva6bmp7k65gfs2696z7-curl-8.20.0"
       },
       "system": "x86_64-linux",
       "group": "toplevel",
@@ -243,37 +436,6 @@
     {
       "attr_path": "gnused",
       "broken": false,
-      "derivation": "/nix/store/3qbiizi1661sr0k5xsban6ml67chsw0k-gnused-4.9.drv",
-      "description": "GNU sed, a batch stream editor",
-      "install_id": "gnused",
-      "license": "GPL-3.0-or-later",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
-      "name": "gnused-4.9",
-      "pname": "gnused",
-      "rev": "d407951447dcd00442e97087bf374aad70c04cea",
-      "rev_count": 1027867,
-      "rev_date": "2026-07-05T04:06:12Z",
-      "scrape_date": "2026-07-06T04:09:01.836568Z",
-      "stabilities": [
-        "staging",
-        "unstable"
-      ],
-      "unfree": false,
-      "version": "4.9",
-      "outputs_to_install": [
-        "out"
-      ],
-      "outputs": {
-        "info": "/nix/store/j403q9gj9k520ps7pgzyapv779g1w4r9-gnused-4.9-info",
-        "out": "/nix/store/9jnz7q1jhccxclzrghm539312f90b1la-gnused-4.9"
-      },
-      "system": "x86_64-darwin",
-      "group": "toplevel",
-      "priority": 5
-    },
-    {
-      "attr_path": "gnused",
-      "broken": false,
       "derivation": "/nix/store/mgv3vazn4vhk6drkzs642ly6lp26nxnq-gnused-4.9.drv",
       "description": "GNU sed, a batch stream editor",
       "install_id": "gnused",
@@ -301,6 +463,96 @@
       "outputs": {
         "info": "/nix/store/gxapzvp834wn041yqv35zwzasamvqziv-gnused-4.9-info",
         "out": "/nix/store/0hamsiy8hsyfw1hmizbc3bf93ad7fa1v-gnused-4.9"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "unzip",
+      "broken": false,
+      "derivation": "/nix/store/bappdxpph235p3j4da40866xmbdvpv8m-unzip-6.0.drv",
+      "description": "Extraction utility for archives compressed in .zip format",
+      "install_id": "unzip",
+      "license": "Info-ZIP",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
+      "name": "unzip-6.0",
+      "pname": "unzip",
+      "rev": "d407951447dcd00442e97087bf374aad70c04cea",
+      "rev_count": 1027867,
+      "rev_date": "2026-07-05T04:06:12Z",
+      "scrape_date": "2026-07-06T03:15:38.783429Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "6.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/l8xcj3frck6mmilr69535n4z4phccllm-unzip-6.0"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "unzip",
+      "broken": false,
+      "derivation": "/nix/store/xsn7ibskax2pvq2vq76rxgdczdqw1gkg-unzip-6.0.drv",
+      "description": "Extraction utility for archives compressed in .zip format",
+      "install_id": "unzip",
+      "license": "Info-ZIP",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
+      "name": "unzip-6.0",
+      "pname": "unzip",
+      "rev": "d407951447dcd00442e97087bf374aad70c04cea",
+      "rev_count": 1027867,
+      "rev_date": "2026-07-05T04:06:12Z",
+      "scrape_date": "2026-07-06T03:44:48.426536Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "6.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/vm3s2n0vzkzqr4cs4d3ii8zn6hafkyvm-unzip-6.0"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "unzip",
+      "broken": false,
+      "derivation": "/nix/store/d0cbbhinqf02lhpi7x359ci7d0gjnh5n-unzip-6.0.drv",
+      "description": "Extraction utility for archives compressed in .zip format",
+      "install_id": "unzip",
+      "license": "Info-ZIP",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
+      "name": "unzip-6.0",
+      "pname": "unzip",
+      "rev": "d407951447dcd00442e97087bf374aad70c04cea",
+      "rev_count": 1027867,
+      "rev_date": "2026-07-05T04:06:12Z",
+      "scrape_date": "2026-07-06T04:44:09.901762Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "6.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/20s13aq9lzbalbzbzygczqp8sy4s4gky-unzip-6.0"
       },
       "system": "x86_64-linux",
       "group": "toplevel",
