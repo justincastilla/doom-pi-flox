@@ -1,0 +1,61 @@
+# Publish doom_share to FloxHub, one build per platform.
+#
+# One-time setup: put a FloxHub token in the repository secret FLOXHUB_TOKEN
+# (on a machine where you're logged in: `flox auth token`). Then run this
+# workflow from the Actions tab. Leave "org" empty to publish to your personal
+# catalog (visible only to you), or set it to an organization you belong to
+# so everyone can `flox run doom`.
+#
+# Each job publishes the build for its own runner's platform:
+#   ubuntu-24.04      -> x86_64-linux
+#   ubuntu-24.04-arm  -> aarch64-linux  (Raspberry Pi)
+#   macos-latest      -> aarch64-darwin (Apple Silicon)
+name: publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      org:
+        description: "FloxHub organization to publish to (empty = personal catalog)"
+        required: false
+        default: ""
+
+jobs:
+  publish:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm, macos-latest]
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0          # flox publish re-clones from the remote; a full checkout keeps refs sane
+
+      - name: Install Flox
+        run: |
+          curl -fsSL https://get.flox.dev | sh
+          flox --version
+          flox config --set disable_metrics true
+
+      - name: Log in to FloxHub
+        env:
+          FLOXHUB_TOKEN: ${{ secrets.FLOXHUB_TOKEN }}
+        run: |
+          if [ -z "$FLOXHUB_TOKEN" ]; then
+            echo "FLOXHUB_TOKEN secret is not set; see the comment at the top of this workflow." >&2
+            exit 1
+          fi
+          printf '%s' "$FLOXHUB_TOKEN" | flox auth login --token-file -
+          flox auth status
+
+      - name: Build
+        run: flox build doom_share
+
+      - name: Publish
+        run: |
+          if [ -n "${{ github.event.inputs.org }}" ]; then
+            flox publish -o "${{ github.event.inputs.org }}" doom_share
+          else
+            flox publish doom_share
+          fi

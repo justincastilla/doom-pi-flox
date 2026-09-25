@@ -1,19 +1,23 @@
 ## doom_share: id Software's 1993 shareware DOOM as a Flox package -------
 ##
-##   flox build                # -> result-doom_share/{bin/doom_share,share/games/doom/doom1.wad}
-##   flox publish              # -> <your-catalog>/doom_share on FloxHub
+##   flox build                # -> result-doom_share/{bin/doom,share/games/doom/doom1.wad}
+##   flox publish              # -> <catalog>/doom_share on FloxHub
 ##
-## Consumers pair it with any Doom engine from the catalog:
-##   flox install <engine> <catalog>/doom_share
-##   doom_share
+## Then, anywhere with Flox:
+##   flox run doom             # one-off, no environment needed
+##   flox install <catalog>/doom_share && doom
 ##
 ## Manifest reference: https://flox.dev/docs/reference/command-reference/manifest.toml/
 ## ----------------------------------------------------------------------
 schema-version = "1.16.0"
 
-## Build-time tools only. Nothing here is a runtime dependency of the
-## package (see runtime-packages below); the engine is the consumer's choice.
+## The package is the shareware data plus a launcher. To be runnable on its
+## own (`flox run doom`) it carries one Doom engine as a runtime dependency;
+## the launcher itself names no engine and finds whatever is on PATH, so
+## swapping the bundled engine is a one-line change here. coreutils and
+## gnused are build-time only.
 [install]
+crispy-doom.pkg-path = "crispy-doom"
 coreutils.pkg-path = "coreutils"
 gnused.pkg-path = "gnused"
 
@@ -23,14 +27,16 @@ version = "1.9"
 # Pure: built from git-tracked files only, no network. This is what makes
 # `flox publish` reproducible: the WAD in the package is the WAD in git.
 sandbox = "pure"
-# The package is data plus a shell script; it needs no packages at runtime.
-runtime-packages = []
+# Only the engine rides along at runtime (Flox wraps bin/doom so the engine
+# is on its PATH); the build tools do not.
+runtime-packages = ["crispy-doom"]
 command = '''
   set -euo pipefail
   mkdir -p "$out/bin" "$out/share/games/doom" "$out/share/doc/doom_share"
   cp wads/doom1.wad "$out/share/games/doom/doom1.wad"
-  cp bin/doom_share "$out/bin/doom_share"
-  chmod 0755 "$out/bin/doom_share"
+  cp bin/doom_share "$out/bin/doom"
+  chmod 0755 "$out/bin/doom"
+  ln -s doom "$out/bin/doom_share"
   cp LICENSE README.md "$out/share/doc/doom_share/"
   # Belt and braces: refuse to package anything but the v1.9 shareware WAD.
   echo "f0cefca49926d00903cf57551d901abe  $out/share/games/doom/doom1.wad" | md5sum -c -

@@ -2,10 +2,10 @@
 # Build the doom_share package and prove a consumer can play it:
 #   1. flox build              -> result-doom_share
 #   2. the packaged WAD is byte-for-byte id's v1.9 shareware doom1.wad
-#   3. a throwaway environment with one engine from the catalog runs the
-#      WAD's built-in demo through the package's launcher (headless SDL).
-#      The package names no engine; the test has to pick one to play with.
-#      Override with TEST_ENGINE=<name>.
+#   3. bin/doom runs the WAD's built-in demo with nothing else installed,
+#      proving the bundled engine is in the package's runtime closure
+#   4. bin/doom --engine <other> works from an environment that has another
+#      engine installed (TEST_ENGINE, default chocolate-doom)
 #
 # Run from anywhere: ./ci/smoke-test   (needs flox, git, and network on first run)
 set -euo pipefail
@@ -18,7 +18,8 @@ echo
 echo "== 1. flox build"
 flox build doom_share
 out="$PWD/result-doom_share"
-test -x "$out/bin/doom_share"
+test -x "$out/bin/doom"
+test -e "$out/bin/doom_share"
 echo
 
 echo "== 2. package contents"
@@ -30,20 +31,30 @@ fi
 echo "doom1.wad md5 OK (id Software shareware v1.9)"
 echo
 
-TEST_ENGINE="${TEST_ENGINE:-crispy-doom}"
-echo "== 3. consumer environment: $TEST_ENGINE from the catalog + this package"
-consumer="$(mktemp -d)"
-flox init -d "$consumer" -n consumer --no-auto-setup >/dev/null
-flox install -d "$consumer" "$TEST_ENGINE"
 export SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy HOME="$(mktemp -d)"
 # Doom reports timedemo results through I_Error() and exits non-zero on
 # success, as it has since 1993; the "timed N gametics" line is the verdict.
-log=$(flox activate -d "$consumer" -- bash -c "PATH='$out/bin:'\$PATH; doom_share -nosound -nomusic -window -timedemo demo1" 2>&1 || true)
-if result=$(printf '%s\n' "$log" | grep -m1 -oE 'timed [0-9]+ gametics in [0-9]+ realtics \([0-9.]+ fps\)'); then
-  printf '%s\n' "$log" | grep -E "adding .*doom1.wad|DOOM Shareware" || true
-  echo "demo OK ($result)"
-else
-  printf '%s\n' "$log" | tail -30; echo "FAIL: launcher did not complete the demo" >&2; exit 1
-fi
+play() {  # play LABEL CMD... : run the built-in demo, pass if it completes
+  local label="$1"; shift
+  local log
+  log=$("$@" -nosound -nomusic -window -timedemo demo1 2>&1 || true)
+  if result=$(printf '%s\n' "$log" | grep -m1 -oE 'timed [0-9]+ gametics in [0-9]+ realtics \([0-9.]+ fps\)'); then
+    printf '%s\n' "$log" | grep -E "adding .*doom1.wad|DOOM Shareware" || true
+    echo "$label: demo OK ($result)"
+  else
+    printf '%s\n' "$log" | tail -30; echo "FAIL: $label did not complete the demo" >&2; exit 1
+  fi
+}
+
+echo "== 3. standalone: bin/doom with nothing else installed (the bundled engine must ride along)"
+play "standalone" env -i PATH=/usr/bin:/bin HOME="$HOME" SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy "$out/bin/doom"
 echo
-echo "smoke-test: doom_share builds, contains the right WAD, and plays."
+
+echo "== 4. another engine via --engine, from a throwaway environment"
+TEST_ENGINE="${TEST_ENGINE:-chocolate-doom}"
+consumer="$(mktemp -d)"
+flox init -d "$consumer" -n consumer --no-auto-setup >/dev/null
+flox install -d "$consumer" "$TEST_ENGINE"
+play "--engine $TEST_ENGINE" flox activate -d "$consumer" -- "$out/bin/doom" --engine "$TEST_ENGINE"
+echo
+echo "smoke-test: doom_share builds, contains the right WAD, runs on its own, and accepts other engines."
