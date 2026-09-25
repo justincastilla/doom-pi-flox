@@ -8,7 +8,7 @@ launcher installed as `doom`, and one Doom engine as a runtime dependency so
 the package runs on its own.
 
 ```bash
-flox run doom
+flox run -p justin-flox/doom_share -- doom
 ```
 
 That's it. No environment, no install step. It works on a Raspberry Pi
@@ -16,11 +16,9 @@ That's it. No environment, no install step. It works on a Raspberry Pi
 package. The WAD is in this repo because id shipped it that way: the 1995
 installer's banner reads "SHAREWARE VERSION, PLEASE DISTRIBUTE!!!".
 
-If more than one package in the catalog provides a `doom` command, name it:
-
-```bash
-flox run -p justin-flox/doom_share -- doom
-```
+The shorter `flox run doom` works once Flox's command index knows the
+package; until then it says "The command 'doom' has not been indexed yet",
+and the `-p` form above is the one to use.
 
 Or install it into an environment and run `doom` like any other command:
 
@@ -116,7 +114,7 @@ The short version, on Raspberry Pi OS 64-bit:
 
 ```bash
 curl -fsSL https://get.flox.dev | sh
-flox run doom
+flox run -p justin-flox/doom_share -- doom
 ```
 
 ## Licenses

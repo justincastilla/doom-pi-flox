@@ -4,7 +4,7 @@
 
 - [ ] Pi boots into DOOM on its own (kiosk unit enabled). Reboot it twice to be sure.
 - [ ] `./ci/smoke-test` passes on the laptop; screenshot the output for the booth screen.
-- [ ] `flox run doom -- -window` works on the laptop. Apple Silicon uses the `aarch64-darwin` build of the same package.
+- [ ] `flox run -p justin-flox/doom_share -- doom -window` works on the laptop. Apple Silicon uses the `aarch64-darwin` build of the same package.
 - [ ] The publish workflow has run for all three platforms and `flox search doom_share` shows it. If visitors should be able to run it themselves, it was published to an organization catalog.
 - [ ] Pack: Pi, PSU, micro-HDMI cable, USB keyboard, USB mouse, a gamepad, Ethernet cable, spare flashed SD card.
 - [ ] Both machines have the packages cached from the hotel. Don't install at the booth.
@@ -12,7 +12,7 @@
 ## The 60-second demo
 
 1. Point at the Pi playing DOOM. "That's a Raspberry Pi. Nothing on it was apt-installed except curl and Flox."
-2. On the laptop, in a terminal with nothing set up: `flox run doom`. One command. No clone, no install, no environment. The game comes up.
+2. On the laptop, in a terminal with nothing set up: `flox run -p justin-flox/doom_share -- doom`. One command. No clone, no install, no environment. The game comes up.
 3. "Same package on the Pi, on this Mac, and in CI on an arm64 runner. It's the 1993 shareware WAD plus a launcher, packaged with Flox from this repo, and the engine rides along as a runtime dependency."
 4. If they're technical: `cat .flox/env/manifest.toml` in the repo. A `[build]` section that copies one file and verifies its checksum, and that's the whole package. `flox publish` re-clones and rebuilds it from git, so what's in the catalog is what's in the commit.
 5. Hand them the keyboard.

@@ -34,7 +34,7 @@ You don't clone this repo on the Pi. The package carries its own engine, so
 one command fetches and runs it:
 
 ```bash
-flox run doom
+flox run -p justin-flox/doom_share -- doom
 ```
 
 The first run downloads roughly 100 MB, so do it at the hotel, not at the
@@ -62,7 +62,7 @@ cd ~/doom-pi-flox && flox build          # -> result-doom_share/bin/doom
 From the console (Lite, or Ctrl-Alt-F2 on the desktop image):
 
 ```bash
-flox run doom                    # or, from ~/doom:  flox activate -- doom
+flox run -p justin-flox/doom_share -- doom     # or, from ~/doom:  flox activate -- doom
 ```
 
 The launcher notices there is no Wayland or X11 session and sets
@@ -71,7 +71,7 @@ Pi it also defaults to SDL's software scaler, which is plenty for Doom. To try
 the GPU path instead:
 
 ```bash
-DOOM_SHARE_RENDER=gpu flox run doom
+DOOM_SHARE_RENDER=gpu flox run -p justin-flox/doom_share -- doom
 ```
 
 From the desktop, run the same command in a terminal; add `-window` if you
@@ -81,7 +81,7 @@ Sound: on the desktop SDL finds PipeWire on its own. On the console, if it's
 silent, force ALSA:
 
 ```bash
-SDL_AUDIODRIVER=alsa flox run doom
+SDL_AUDIODRIVER=alsa flox run -p justin-flox/doom_share -- doom
 ```
 
 Escape opens the menu; quit from there. Keys: arrows/WASD, Ctrl fire, Space
