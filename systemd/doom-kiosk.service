@@ -1,8 +1,8 @@
 # DOOM kiosk: boot the Raspberry Pi straight into the game on tty1.
 #
-# Assumes a consumer environment at /home/pi/doom created with:
+# Assumes an environment at /home/pi/doom created with:
 #   mkdir ~/doom && cd ~/doom && flox init
-#   flox install <engine> justincastilla/doom_share
+#   flox install justincastilla/doom_share
 # Adjust User=, Group=, HOME and the two paths if your user isn't "pi".
 #
 #   sudo cp systemd/doom-kiosk.service /etc/systemd/system/
@@ -28,7 +28,7 @@ Environment=HOME=/home/pi
 Environment=SDL_VIDEODRIVER=kmsdrm
 # Uncomment if audio is silent on the console (PipeWire/Pulse only run inside a login session).
 #Environment=SDL_AUDIODRIVER=alsa
-ExecStart=/usr/bin/flox activate --dir /home/pi/doom -- doom_share --kiosk
+ExecStart=/usr/bin/flox activate --dir /home/pi/doom -- doom --kiosk
 Restart=always
 RestartSec=3
 StandardInput=tty

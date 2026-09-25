@@ -28,29 +28,33 @@ flox --version
 flox config --set disable_metrics true     # optional
 ```
 
-## 3. Make the game environment
+## 3. Get the game
 
-You don't clone this repo on the Pi. You make an environment and install two
-packages from the catalog: a Doom engine of your choice, and `doom_share`.
+You don't clone this repo on the Pi. The package carries its own engine, so
+one command fetches and runs it:
+
+```bash
+flox run doom
+```
+
+The first run downloads roughly 100 MB, so do it at the hotel, not at the
+booth. After that it's cached and offline.
+
+For the kiosk unit below, an environment is tidier than `flox run`:
 
 ```bash
 mkdir ~/doom && cd ~/doom
 flox init
-flox search doom                                   # every port here builds for aarch64-linux
-flox install <engine> justincastilla/doom_share    # a software-rendered, vanilla-compatible port is the safe pick
+flox install justincastilla/doom_share
 ```
 
-The first install downloads roughly 100 MB, so do it at the hotel, not at the
-booth. After that the environment is offline and instant.
-
 If `doom_share` is not visible to you (personal catalogs are private to
-their owner), build it from this repo on the Pi instead:
+their owner, and you may be logged in as someone else), build it from this
+repo on the Pi instead:
 
 ```bash
 git clone https://github.com/justincastilla/doom-pi-flox ~/doom-pi-flox
-cd ~/doom-pi-flox && flox build          # -> result-doom_share/
-cd ~/doom && flox install <engine>
-# then use ~/doom-pi-flox/result-doom_share/bin/doom_share in place of doom_share below
+cd ~/doom-pi-flox && flox build          # -> result-doom_share/bin/doom
 ```
 
 ## 4. Play
@@ -58,8 +62,7 @@ cd ~/doom && flox install <engine>
 From the console (Lite, or Ctrl-Alt-F2 on the desktop image):
 
 ```bash
-cd ~/doom
-flox activate -- doom_share
+flox run doom                    # or, from ~/doom:  flox activate -- doom
 ```
 
 The launcher notices there is no Wayland or X11 session and sets
@@ -68,7 +71,7 @@ Pi it also defaults to SDL's software scaler, which is plenty for Doom. To try
 the GPU path instead:
 
 ```bash
-DOOM_SHARE_RENDER=gpu flox activate -- doom_share
+DOOM_SHARE_RENDER=gpu flox run doom
 ```
 
 From the desktop, run the same command in a terminal; add `-window` if you
@@ -78,7 +81,7 @@ Sound: on the desktop SDL finds PipeWire on its own. On the console, if it's
 silent, force ALSA:
 
 ```bash
-SDL_AUDIODRIVER=alsa flox activate -- doom_share
+SDL_AUDIODRIVER=alsa flox run doom
 ```
 
 Escape opens the menu; quit from there. Keys: arrows/WASD, Ctrl fire, Space
@@ -93,7 +96,7 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now doom-kiosk
 ```
 
-The unit takes over tty1 and runs `flox activate -- doom_share --kiosk`.
+The unit takes over tty1 and runs `flox activate -- doom --kiosk`.
 When a player quits, the game restarts two seconds later. Config and saves go
 to `~/.local/state/doom_share-kiosk/`, so a reset between players is
 `rm -rf` on that directory.
@@ -114,8 +117,9 @@ console (`sudo raspi-config` > System Options > Boot / Auto Login).
 activated environment, enable the joystick and bind buttons. Under the kiosk
 unit the engine's config lives under `~/.local/state/doom_share-kiosk/`.
 
-**Another engine.** `flox install gzdoom` then `doom_share --engine gzdoom`.
-GZDoom needs a working GPU path, which is the one thing untested on a Pi.
+**Another engine.** `flox install <engine>` into `~/doom`, then
+`doom --engine <engine>`. GPU-rendered ports need a working GPU path, which
+is the one thing untested on a Pi.
 
 **Your own DOOM.WAD.** Registered copies (Steam, GOG) work with any engine:
 put the file somewhere and run `<engine> -iwad /path/to/DOOM.WAD`. Never
@@ -127,7 +131,7 @@ commit or publish it.
 | --- | --- |
 | `uname -m` says `armv7l` | 32-bit OS. Re-flash with the 64-bit image. |
 | `flox install` says no package for this system | Same cause. `aarch64-linux` is required. |
-| `doom_share: no Doom engine found on PATH` | Install one in the same environment (`flox search doom`), or point at it with `--engine NAME` if its command doesn't contain "doom". |
+| `doom: no Doom engine found on PATH` | Shouldn't happen with the package, which bundles one. If you copied the launcher out of it, install an engine (`flox search doom`) or point at one with `--engine NAME`. |
 | Black screen, then back to the shell | Read the last lines: an EGL/GBM error means the GPU path failed. Make sure `DOOM_SHARE_RENDER=gpu` isn't set, and that your user is in the `video` and `render` groups. |
 | `Could not initialize SDL video: kmsdrm not available` | A compositor already owns the display. Run from a real tty (Ctrl-Alt-F2), or on the desktop unset `SDL_VIDEODRIVER`. |
 | No sound on the console | `SDL_AUDIODRIVER=alsa`, and check `aplay -l` shows the HDMI device. |
