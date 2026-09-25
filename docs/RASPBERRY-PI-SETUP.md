@@ -45,7 +45,7 @@ For the kiosk unit below, an environment is tidier than `flox run`:
 ```bash
 mkdir ~/doom && cd ~/doom
 flox init
-flox install justincastilla/doom_share
+flox install justin-flox/doom_share
 ```
 
 If `doom_share` is not visible to you (personal catalogs are private to

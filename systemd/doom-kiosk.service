@@ -2,7 +2,7 @@
 #
 # Assumes an environment at /home/pi/doom created with:
 #   mkdir ~/doom && cd ~/doom && flox init
-#   flox install justincastilla/doom_share
+#   flox install justin-flox/doom_share
 # Adjust User=, Group=, HOME and the two paths if your user isn't "pi".
 #
 #   sudo cp systemd/doom-kiosk.service /etc/systemd/system/

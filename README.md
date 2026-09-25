@@ -19,13 +19,13 @@ installer's banner reads "SHAREWARE VERSION, PLEASE DISTRIBUTE!!!".
 If more than one package in the catalog provides a `doom` command, name it:
 
 ```bash
-flox run -p justincastilla/doom_share -- doom
+flox run -p justin-flox/doom_share -- doom
 ```
 
 Or install it into an environment and run `doom` like any other command:
 
 ```bash
-flox install justincastilla/doom_share
+flox install justin-flox/doom_share
 doom
 ```
 
@@ -41,7 +41,7 @@ doom -warp 1 3 -skill 4            # any engine flag passes straight through
 doom --engine <name>               # use another engine on PATH (or: DOOMPORT=<name>)
 doom --kiosk                       # booth mode: restarts when a player quits
 doom --help
-flox run -p justincastilla/doom_share -- doom --kiosk     # the same through flox run
+flox run -p justin-flox/doom_share -- doom --kiosk     # the same through flox run
 ```
 
 `doom_share` is an alias for `doom` inside the package.
